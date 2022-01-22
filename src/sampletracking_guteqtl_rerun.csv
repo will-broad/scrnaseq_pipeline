@@ -1,0 +1,2 @@
+date,run_pipeline,Channel Name,sampleid,condition,replicate,tissue,Lane,Index,project,project_orig,reference,chemistry,flowcell,seq_dir,min_umis,min_genes,percent_mito,cellbender_expected_cells,cellbender_total_droplets_included,focus,append,calc_signature_scores,introns
+2021_11_18,TRUE,139026 - 3/9/21 RNA later sample from F/F pilot biopsy - PBS+1%BSA+RI,SCRSP-10287,nuclei,channel1,gut,*,SI-TT-D1,GIDER,PRISM,GRCh38-2020-A,SC3Pv3,HLVFWBGXJ,/ahg/regev_nextseq/Data03/210802_NB501583_0886_AHLVFWBGXJ,400,200,20,400,20000,,,,TRUE
