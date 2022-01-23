@@ -92,11 +92,11 @@ def wait_for_terra_submission(status_url):
         time.sleep(TERRA_POLL_SPACER)
         response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
         if time.time() - start_time > TERRA_TIMEOUT:
-            logging.error("Terra pipeline took too long to complete.")
+            logging.info("Terra pipeline took too long to complete.")
             sys.exit()
 
     for workflow in response.json()['workflows']:
         if workflow['status'] != 'Succeeded':
-            logging.error("Terra pipeline failed.")
+            logging.info("Terra pipeline failed.")
             sys.exit()
 
