@@ -1,3 +1,4 @@
+import logging
 import shutil
 import sys
 import os
@@ -6,8 +7,9 @@ import re
 import time
 import firecloud.api as fapi
 
-TERRA_POLL_SPACER = 600 # 10 minutes
-TERRA_TIMEOUT = 7200 # 2 hours
+TERRA_POLL_SPACER = 600  # 10 minutes
+TERRA_TIMEOUT = 7200  # 2 hours
+
 
 def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts, cellranger_version):
     bcl_bucket = buckets['bcl']
@@ -41,11 +43,12 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
             f.write("\t\"cellranger_workflow.output_directory\" : \"%s\",\n" % (counts_bucket))
             f.write("\t\"cellranger_workflow.cellranger_version\" : \"%s\",\n" % (cellranger_version))
             f.write("\t\"cellranger_workflow.run_mkfastq\" : true,\n")
+            f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"quay.io/cumulus\",\n")
             f.write("\t\"cellranger_workflow.include_introns\" : %s\n" % str(cellranger_dict[sampleid][0]).lower())
             f.write("}\n")
 
     # Running bash script below to upload cellranger samplesheet and input file to Google Cloud Storage Bucket.
-    print("\n## STEP 1 | Upload cellranger samplesheet and input file to Google Cloud Storage Bucket. ##")
+    logging.info("\n## STEP 1 | Upload cellranger samplesheet and input file to Google Cloud Storage Bucket. ##")
     uploadcellranger_file = "%s/uploadcellranger.sh" % counts_dir
     with open(uploadcellranger_file, "w") as f:
         for sampleid in sample_dict.keys():
@@ -54,7 +57,7 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cellranger_file, counts_bucket, sampleid))
             f.write("gsutil cp %s %s/%s/\n" % (input_cellranger_file, counts_bucket, sampleid))
     command = "bash %s" % uploadcellranger_file
-    print(command)
+    logging.info(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
 
@@ -72,9 +75,9 @@ def run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace,
             alto_method, input_cellranger_file, alto_workspace, alto_counts_folder, sampleid))
     bash_alto.close()
 
-    print("\n## STEP 2 | Initiate Terra cellranger_workflow pipeline via alto. ##")
+    logging.info("\n## STEP 2 | Initiate Terra cellranger_workflow pipeline via alto. ##")
     command = "bash %s" % run_alto_file
-    print(command)
+    logging.info(command)
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
     for status_url in result.stdout.decode('utf-8').split("\n"):
         wait_for_terra_submission(status_url)
@@ -134,7 +137,7 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
             f.write("}\n")
 
     # Running bash script below to upload cumulus samplesheet and input file to Google Cloud Storage Bucket.
-    print("\n## STEP 3 | Upload cumulus samplesheet and input file to Google Cloud Storage Bucket. ##")
+    logging.info("\n## STEP 3 | Upload cumulus samplesheet and input file to Google Cloud Storage Bucket. ##")
     uploadcumulus_file = "%s/uploadcumulus_%s.sh" % (results_dir, sampletracking['flowcell'].iloc[0])
     with open(uploadcumulus_file, "w") as f:
         for sampleid in sampledict.keys():
@@ -144,7 +147,7 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
             f.write("gsutil cp %s %s/%s/\n" % (input_cumulus_file, resultsbucket, sampleid))
             # f.write("gsutil cp %s %s/\n" % (cumulusdict[sampleid][5], resultsbucket))
     command = "bash %s" % uploadcumulus_file
-    print(command)
+    logging.info(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
 
@@ -163,13 +166,14 @@ def run_cumulus(directories, sample_dicts, alto_workspace, alto_results_folder):
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
-    print(
+    logging.info(
         "\n## STEP 4 | Initiate Terra cumulus pipeline via alto. ##")
     command = "bash %s" % run_alto_file
-    print(command)
+    logging.info(command)
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
     for status_url in result.stdout.decode('utf-8').split("\n"):
         wait_for_terra_submission(status_url)
+
 
 def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking, count_matrix_name):
     sampledict = sample_dicts['sample']
@@ -215,7 +219,7 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking,
                 f.write("}\n")
 
     # Running bash script below to upload cellbender input file to Google Cloud Storage Bucket.
-    print("\n## STEP 5 | Upload cellbender input file to Google Cloud Storage Bucket. ##")
+    logging.info("\n## STEP 5 | Upload cellbender input file to Google Cloud Storage Bucket. ##")
     uploadcellbender_file = "%s/uploadcellbender_%s.sh" % (cellbender_dir, sampletracking['flowcell'].iloc[0])
     with open(uploadcellbender_file, "w") as f:
         for sampleid in sampledict.keys():
@@ -223,7 +227,7 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking,
                 input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
                 f.write("gsutil cp %s %s/%s/\n" % (input_cellbender_file, cellbenderbucket, sampleid))
     command = "bash %s" % uploadcellbender_file
-    print(command)
+    logging.info(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
 
@@ -243,12 +247,13 @@ def run_cellbender(directories, sample_dicts, alto_workspace, alto_cellbender_fo
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
-    print("\n## STEP 6 | Initiate Terra remove-background pipeline via alto. ##")
+    logging.info("\n## STEP 6 | Initiate Terra remove-background pipeline via alto. ##")
     command = "bash %s" % run_alto_file
-    print(command)
+    logging.info(command)
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
     for status_url in result.stdout.decode('utf-8').split("\n"):
         wait_for_terra_submission(status_url)
+
 
 def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sampletracking, cellbender_matrix_name):
     sampledict = sample_dicts['sample']
@@ -307,7 +312,7 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
             f.write("}\n")
 
         # Running bash script below to upload cumulus samplesheet and input file to Google Cloud Storage Bucket.
-    print("\n## STEP 7 | Upload post-cellbender cumulus samplesheet and input file to Google Cloud Storage Bucket. ##")
+    logging.info("\n## STEP 7 | Upload post-cellbender cumulus samplesheet and input file to Google Cloud Storage Bucket. ##")
     uploadcellbendercumulus_file = "%s/uploadcellbendercumulus_%s.sh" % (
         cellbender_results_dir, sampletracking['flowcell'].iloc[0])
     with open(uploadcellbendercumulus_file, "w") as f:
@@ -319,7 +324,7 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
             f.write("gsutil cp %s %s/%s/\n" % (input_cellbender_cumulus_file, cellbender_resultsbucket, sampleid))
             # f.write("gsutil cp %s %s/\n" % (cumulusdict[sampleid][5], cellbender_resultsbucket))
     command = "bash %s" % uploadcellbendercumulus_file
-    print(command)
+    logging.info(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
 
@@ -339,12 +344,13 @@ def run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
-    print("\n## STEP 8 | Initiate Terra cumulus pipeline via alto. ##")
+    logging.info("\n## STEP 8 | Initiate Terra cumulus pipeline via alto. ##")
     command = "bash %s" % run_alto_file
-    print(command)
+    logging.info(command)
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
     for status_url in result.stdout.decode('utf-8').split("\n"):
         wait_for_terra_submission(status_url)
+
 
 def build_directories(basedir):
     directories = {
@@ -394,10 +400,10 @@ def build_sample_dicts(sample_tracking, sampleids):
         cellbender_dict[row['sampleid']] = [row['cellbender_expected_cells'], row['cellbender_total_droplets_included']]
         cellranger_dict[row['sampleid']] = [row['introns']]
 
-    print(sample_dict)
-    print(mkfastq_dict)
-    print(cumulus_dict)
-    print(cellbender_dict)
+    logging.info(sample_dict)
+    logging.info(mkfastq_dict)
+    logging.info(cumulus_dict)
+    logging.info(cellbender_dict)
 
     return {
         'sample': sample_dict,
@@ -409,20 +415,23 @@ def build_sample_dicts(sample_tracking, sampleids):
 
 
 def wait_for_terra_submission(status_url):
+    logging.info("Job status: %s" % status_url)
     entries = status_url.split('/')
-    workspace_namespace, workspace_name, submission_id = [entries[idx] for idx in [-4,-3,-1]]
+    workspace_namespace, workspace_name, submission_id = [entries[idx] for idx in [-4, -3, -1]]
     response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
-    startTime = time.time()
+    start_time = time.time()
     while response.json()['status'] != 'Done':
-        print({ k : v for k, v in response.json().items() if k in ['status', 'submissionDate', 'submissionId', '']})
-        print('\n')
+        logging.info({k: v for k, v in response.json().items() if k in ['status', 'submissionDate', 'submissionId', '']})
+        logging.info('\n')
         time.sleep(TERRA_POLL_SPACER)
-        if time.time() - startTime > TERRA_TIMEOUT:
+        response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
+        if time.time() - start_time > TERRA_TIMEOUT:
             raise RuntimeError("Terra pipeline took too long to complete.")
 
     for workflow in response.json()['workflows']:
         if workflow['status'] != 'Succeeded':
             raise RuntimeError("Terra pipeline failed.")
+
 
 # gsutil hash local-file
 #
@@ -438,5 +447,5 @@ def gcp_copy(src, recursive, parallel, ionice=True):
     if recursive:
         call_args.append('-r')
     call_args.extend(src)
-    print(' '.join(call_args))
+    logging.info(' '.join(call_args))
     subprocess.check_call(call_args)
