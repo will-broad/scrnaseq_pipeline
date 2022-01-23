@@ -90,38 +90,19 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
     # Make input_cumulus file for cumulus.
     for sampleid in sampledict.keys():
         input_cumulus_file = "%s/%s/input_cumulus.json" % (results_dir, sampleid)
+        samplesheet_cumulus = "%s/%s/samplesheet_cumulus.csv" % (resultsbucket, sampleid)
+
+        with open('templates/cumulus_input_template.json') as f:
+            template = f.read()
+        template = template.replace('{input_file}', samplesheet_cumulus) \
+            .replace('{output_directory}', "%s/" % resultsbucket) \
+            .replace('{output_name}', sampleid) \
+            .replace('"{min_umis}"', str(cumulusdict[sampleid][0])) \
+            .replace('"{min_genes}"', str(cumulusdict[sampleid][1])) \
+            .replace('"{percent_mito}"', str(cumulusdict[sampleid][2]))
 
         with open(input_cumulus_file, "w") as f:
-            f.write("{\n")
-            f.write("\t\"cumulus.input_file\" : \"%s/%s/samplesheet_cumulus.csv\",\n" % (resultsbucket, sampleid))
-            f.write("\t\"cumulus.output_directory\" : \"%s/\",\n" % (resultsbucket))
-            # f.write("\t\"cumulus.default_reference\" : \"%s\",\n" % reference)
-            f.write("\t\"cumulus.output_name\" : \"%s\",\n" % (sampleid))
-            f.write("\t\"cumulus.min_umis\" : %s,\n" % cumulusdict[sampleid][0])
-            f.write("\t\"cumulus.min_genes\" : %s,\n" % cumulusdict[sampleid][1])
-            f.write("\t\"cumulus.percent_mito\" : %s,\n" % cumulusdict[sampleid][2])
-            f.write("\t\"cumulus.infer_doublets\" : true,\n")
-
-            f.write("\t\"cumulus.run_louvain\" : false,\n")
-            f.write("\t\"cumulus.run_leiden\" : true,\n")
-            f.write("\t\"cumulus.leiden_resolution\" : 1,\n")
-            f.write("\t\"cumulus.run_diffmap\" : false,\n")
-            f.write("\t\"cumulus.perform_de_analysis\" : true,\n")
-            f.write("\t\"cumulus.cluster_labels\" : \"leiden_labels\",\n")
-            f.write("\t\"cumulus.annotate_cluster\" : false,\n")
-            f.write("\t\"cumulus.fisher\" : true,\n")
-            f.write("\t\"cumulus.t_test\" : true,\n")
-            f.write("\t\"cumulus.find_markers_lightgbm\" : false,\n")
-
-            f.write("\t\"cumulus.run_tsne\" : false,\n")
-            f.write("\t\"cumulus.run_umap\" : true,\n")
-            f.write("\t\"cumulus.umap_K\" : 15,\n")
-            f.write("\t\"cumulus.umap_min_dist\" : 0.5,\n")
-            f.write("\t\"cumulus.umap_spread\" : 1,\n")
-            f.write("\t\"cumulus.plot_umap\" : \"leiden_labels\",\n")
-            # f.write("\t\"cumulus.plot_diffmap\" : \"leiden_labels\",\n")
-            f.write("\t\"cumulus.output_h5ad\" : true\n")
-            f.write("}\n")
+            f.write(template)
 
     # Running bash script below to upload cumulus samplesheet and input file to Google Cloud Storage Bucket.
     logging.info("\n## STEP 3 | Upload cumulus samplesheet and input file to Google Cloud Storage Bucket. ##")
@@ -164,7 +145,7 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking,
     cellbender_dir = directories['cellbender']
     cellbenderbucket = buckets['cellbender']
     countsbucket = buckets['counts']
-    # Make input_cellbender file for cellbender.
+
     for sampleid in sampledict.keys():
         if not os.path.isdir("%s/%s" % (cellbender_dir, sampleid)):
             os.mkdir("%s/%s" % (cellbender_dir, sampleid))
@@ -173,33 +154,16 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking,
             if not os.path.isdir("%s/%s" % (cellbender_dir, sampleid)):
                 os.mkdir("%s/%s" % (cellbender_dir, sampleid))
             input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
+            with open('templates/cellbender_input_template.json') as f:
+                template = f.read()
+            template = template.replace('"{total_droplets_included}"', str(cellbenderdict[sampleid][1])) \
+                .replace('"{expected_cells}"', str(cellbenderdict[sampleid][0])) \
+                .replace('{sample_name}', str(sampleid)) \
+                .replace('{input_dir}', "%s/%s/%s" % (countsbucket, sampleid, count_matrix_name)) \
+                .replace('{output_dir}', "%s/%s" % (cellbenderbucket, sampleid))
 
             with open(input_cellbender_file, "w") as f:
-                f.write("{\n")
-                # f.write("\t\"cellbender_remove_background.cellbender_remove_background_gpu.z_layers\" : \"\",\n"),
-                f.write(
-                    "\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.total_droplets_included\" : %s,\n" %
-                    cellbenderdict[sampleid][1]),
-                f.write("\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.z_dim\" : 100,\n"),
-                f.write("\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.epochs\" : 150,\n"),
-                f.write(
-                    "\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.expected_cells\" : %s,\n" %
-                    cellbenderdict[sampleid][0]),
-                f.write(
-                    "\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.sample_name\" : \"%s\",\n" % sampleid)
-                f.write(
-                    "\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.hardware_preemptible_tries\" : 0,\n"),
-                f.write(
-                    "\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.input_10x_h5_file_or_mtx_directory\" : \"%s/%s/%s\",\n" % (
-                        countsbucket, sampleid, count_matrix_name))
-                f.write(
-                    "\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.output_directory\" : \"%s/%s\",\n" % (
-                        cellbenderbucket, sampleid))
-                f.write(
-                    "\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.learning_rate\" : 0.00005,\n")
-                f.write(
-                    "\t\"cellbender_remove_background.run_cellbender_remove_background_gpu.fpr\" : \"0.01 0.05 0.1\"\n")
-                f.write("}\n")
+                f.write(template)
 
     # Running bash script below to upload cellbender input file to Google Cloud Storage Bucket.
     logging.info("\n## STEP 5 | Upload cellbender input file to Google Cloud Storage Bucket. ##")
@@ -257,39 +221,19 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
         # Make input_cumulus file for cumulus.
     for sampleid in sampledict.keys():
         input_cellbender_cumulus_file = "%s/%s/input_cumulus.json" % (cellbender_results_dir, sampleid)
+        samplesheet_cellbender = "%s/%s/samplesheet_cellbender_cumulus.csv" % (cellbender_resultsbucket, sampleid)
+
+        with open('templates/cumulus_input_template.json') as f:
+            template = f.read()
+        template = template.replace('{input_file}', samplesheet_cellbender) \
+            .replace('{output_directory}', "%s/" % cellbender_resultsbucket) \
+            .replace('{output_name}', sampleid) \
+            .replace('"{min_umis}"', str(cumulusdict[sampleid][0])) \
+            .replace('"{min_genes}"', str(cumulusdict[sampleid][1])) \
+            .replace('"{percent_mito}"', str(cumulusdict[sampleid][2])) \
 
         with open(input_cellbender_cumulus_file, "w") as f:
-            f.write("{\n")
-            f.write("\t\"cumulus.input_file\" : \"%s/%s/samplesheet_cellbender_cumulus.csv\",\n" % (
-                cellbender_resultsbucket, sampleid))
-            f.write("\t\"cumulus.output_directory\" : \"%s/\",\n" % (cellbender_resultsbucket))
-            # f.write("\t\"cumulus.default_reference\" : \"%s\",\n" % reference)
-            f.write("\t\"cumulus.output_name\" : \"%s\",\n" % (sampleid))
-            f.write("\t\"cumulus.min_umis\" : %s,\n" % cumulusdict[sampleid][0])
-            f.write("\t\"cumulus.min_genes\" : %s,\n" % cumulusdict[sampleid][1])
-            f.write("\t\"cumulus.percent_mito\" : %s,\n" % cumulusdict[sampleid][2])
-            f.write("\t\"cumulus.infer_doublets\" : true,\n")
-
-            f.write("\t\"cumulus.run_louvain\" : false,\n")
-            f.write("\t\"cumulus.run_leiden\" : true,\n")
-            f.write("\t\"cumulus.leiden_resolution\" : 1,\n")
-            f.write("\t\"cumulus.run_diffmap\" : false,\n")
-            f.write("\t\"cumulus.perform_de_analysis\" : true,\n")
-            f.write("\t\"cumulus.cluster_labels\" : \"leiden_labels\",\n")
-            f.write("\t\"cumulus.annotate_cluster\" : false,\n")
-            f.write("\t\"cumulus.fisher\" : true,\n")
-            f.write("\t\"cumulus.t_test\" : true,\n")
-            f.write("\t\"cumulus.find_markers_lightgbm\" : false,\n")
-
-            f.write("\t\"cumulus.run_tsne\" : false,\n")
-            f.write("\t\"cumulus.run_umap\" : true,\n")
-            f.write("\t\"cumulus.umap_K\" : 15,\n")
-            f.write("\t\"cumulus.umap_min_dist\" : 0.5,\n")
-            f.write("\t\"cumulus.umap_spread\" : 1,\n")
-            f.write("\t\"cumulus.plot_umap\" : \"leiden_labels\",\n")
-            # f.write("\t\"cumulus.plot_diffmap\" : \"leiden_labels\",\n")
-            f.write("\t\"cumulus.output_h5ad\" : true\n")
-            f.write("}\n")
+            f.write(template)
 
         # Running bash script below to upload cumulus samplesheet and input file to Google Cloud Storage Bucket.
     logging.info("\n## STEP 7 | Upload post-cellbender cumulus samplesheet and input file to Google Cloud Storage Bucket. ##")
