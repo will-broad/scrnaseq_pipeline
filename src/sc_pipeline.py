@@ -1,7 +1,7 @@
-import logging
 from utils import *
 import pandas as pd
 import concurrent.futures
+import steps
 
 project_name = "gut_eqtl"
 sample_tracking_file = os.getcwd() + "/sampletracking_guteqtl_rerun.csv"
@@ -9,6 +9,7 @@ gcp_basedir = "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/gut_eqtl"
 email = "dchafamo@broadinstitute.org"
 alto_workspace = "'kco-tech/Gut_eQTL'"
 cellranger_version = "6.0.1"
+max_parallel_threads = 30
 
 count_matrix_name = "raw_feature_bc_matrix.h5"
 filtered_matrix_name = "filtered_feature_bc_matrix.h5"
@@ -38,17 +39,17 @@ def process_sample(seq_dir):
 
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
 
-    upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts, cellranger_version)
-    run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace, alto_folders['alto_counts'])
-    upload_cumulus_samplesheet(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
-    run_cumulus(directories, sample_dicts, alto_workspace, alto_folders['alto_results'])
-    upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
-    run_cellbender(directories, sample_dicts, alto_workspace, alto_folders['alto_cellbender'])
-    upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sample_tracking, cellbender_matrix_name)
-    run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_folders['alto_results'])
+    steps.upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts, cellranger_version)
+    steps.run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace, alto_folders['alto_counts'])
+    steps.upload_cumulus_samplesheet(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
+    steps.run_cumulus(directories, sample_dicts, alto_workspace, alto_folders['alto_results'])
+    steps.upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
+    steps.run_cellbender(directories, sample_dicts, alto_workspace, alto_folders['alto_cellbender'])
+    steps.upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sample_tracking, cellbender_matrix_name)
+    steps.run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_folders['alto_results'])
 
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%H:%M:%S")
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
         executor.map(process_sample, seq_dirs)
