@@ -24,6 +24,7 @@ seq_dirs = set(sample_tracking_alldata[sample_tracking_alldata.run_pipeline]['se
 buckets = build_buckets(gcp_basedir, project)
 alto_folders = build_alto_folders(buckets)
 
+
 def process_sample(seq_dir):
     sample_tracking = sample_tracking_alldata[sample_tracking_alldata.run_pipeline &
                                               (sample_tracking_alldata.seq_dir == seq_dir)]
