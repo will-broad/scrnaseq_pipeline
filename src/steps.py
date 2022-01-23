@@ -2,7 +2,8 @@ import logging
 import sys
 import os
 import subprocess
-from utils import wait_for_terra_submission
+from utils import execute_alto_command
+
 
 def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts, cellranger_version):
     bcl_bucket = buckets['bcl']
@@ -13,18 +14,14 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
     cellranger_dict = sample_dicts['cellranger']
 
     for sampleid in sample_dict.keys():
-        if not os.path.isdir("%s/%s" % (counts_dir, sampleid)):
-            os.mkdir("%s/%s" % (counts_dir, sampleid))
+        os.makedirs("%s/%s" % (counts_dir, sampleid), exist_ok=True)
         samplesheet_cellranger_file = "%s/%s/samplesheet_cellranger.csv" % (counts_dir, sampleid)
 
         with open(samplesheet_cellranger_file, "w") as f:
             f.write("Sample,Reference,Flowcell,Lane,Index,Chemistry\n")
             for sample in sample_dict[sampleid]:
-                lane = mkfastq_dict[sample][0]
-                index = mkfastq_dict[sample][1]
-                reference = mkfastq_dict[sample][2]
-                chemistry = mkfastq_dict[sample][3]
-                f.write("%s,%s,%s,%s,%s,%s\n" % (sample, reference, bcl_bucket, lane, index, chemistry))
+                f.write("%s,%s,%s,%s,%s,%s\n" % (sample, mkfastq_dict[sample][2], bcl_bucket, mkfastq_dict[sample][0],
+                                                 mkfastq_dict[sample][1], mkfastq_dict[sample][3]))
 
     for sampleid in sample_dict.keys():
         input_cellranger_file = "%s/%s/input_cellranger.json" % (counts_dir, sampleid)
@@ -33,8 +30,8 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
             f.write("{\n")
             f.write("\t\"cellranger_workflow.input_csv_file\" : \"%s/%s/samplesheet_cellranger.csv\",\n" % (
                 counts_bucket, sampleid))
-            f.write("\t\"cellranger_workflow.output_directory\" : \"%s\",\n" % (counts_bucket))
-            f.write("\t\"cellranger_workflow.cellranger_version\" : \"%s\",\n" % (cellranger_version))
+            f.write("\t\"cellranger_workflow.output_directory\" : \"%s\",\n" % counts_bucket)
+            f.write("\t\"cellranger_workflow.cellranger_version\" : \"%s\",\n" % cellranger_version)
             f.write("\t\"cellranger_workflow.run_mkfastq\" : true,\n")
             f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/genomics-xavier\",\n")
             f.write("\t\"cellranger_workflow.include_introns\" : %s\n" % str(cellranger_dict[sampleid][0]).lower())
@@ -70,11 +67,7 @@ def run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace,
     bash_alto.close()
 
     logging.info("\n## STEP 2 | Initiate Terra cellranger_workflow pipeline via alto. ##")
-    command = "bash %s" % run_alto_file
-    logging.info(command)
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
-    for status_url in result.stdout.decode('utf-8').split("\n"):
-        wait_for_terra_submission(status_url)
+    execute_alto_command(run_alto_file)
 
 
 def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletracking, count_matrix_name):
@@ -139,7 +132,6 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
             input_cumulus_file = "%s/%s/input_cumulus.json" % (results_dir, sampleid)
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cumulus_file, resultsbucket, sampleid))
             f.write("gsutil cp %s %s/%s/\n" % (input_cumulus_file, resultsbucket, sampleid))
-            # f.write("gsutil cp %s %s/\n" % (cumulusdict[sampleid][5], resultsbucket))
     command = "bash %s" % uploadcumulus_file
     logging.info(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
@@ -163,11 +155,7 @@ def run_cumulus(directories, sample_dicts, alto_workspace, alto_results_folder):
     # Terminal commands to run alto cumulus bash script.
     logging.info(
         "\n## STEP 4 | Initiate Terra cumulus pipeline via alto. ##")
-    command = "bash %s" % run_alto_file
-    logging.info(command)
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
-    for status_url in result.stdout.decode('utf-8').split("\n"):
-        wait_for_terra_submission(status_url)
+    execute_alto_command(run_alto_file)
 
 
 def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking, count_matrix_name):
@@ -244,11 +232,7 @@ def run_cellbender(directories, sample_dicts, alto_workspace, alto_cellbender_fo
 
     # Terminal commands to run alto cumulus bash script.
     logging.info("\n## STEP 6 | Initiate Terra remove-background pipeline via alto. ##")
-    command = "bash %s" % run_alto_file
-    logging.info(command)
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
-    for status_url in result.stdout.decode('utf-8').split("\n"):
-        wait_for_terra_submission(status_url)
+    execute_alto_command(run_alto_file)
 
 
 def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sampletracking, cellbender_matrix_name):
@@ -342,8 +326,4 @@ def run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_
 
     # Terminal commands to run alto cumulus bash script.
     logging.info("\n## STEP 8 | Initiate Terra cumulus pipeline via alto. ##")
-    command = "bash %s" % run_alto_file
-    logging.info(command)
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
-    for status_url in result.stdout.decode('utf-8').split("\n"):
-        wait_for_terra_submission(status_url)
+    execute_alto_command(run_alto_file)

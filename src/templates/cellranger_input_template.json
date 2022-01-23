@@ -1,0 +1,8 @@
+{
+  "cellranger_workflow.input_csv_file": "{input_csv}",
+  "cellranger_workflow.output_directory": "{output_dir}",
+  "cellranger_workflow.cellranger_version": "{version}",
+  "cellranger_workflow.run_mkfastq": true,
+  "cellranger_workflow.mkfastq_docker_registry": "gcr.io/genomics-xavier",
+  "cellranger_workflow.include_introns": "{include_introns}"
+}

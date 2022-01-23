@@ -2,10 +2,12 @@ import logging
 import os
 import re
 import time
+import sys
 import firecloud.api as fapi
+import subprocess
 
-TERRA_POLL_SPACER = 600  # 10 minutes
-TERRA_TIMEOUT = 7200  # 2 hours
+TERRA_POLL_SPACER = 600
+TERRA_TIMEOUT = 18000
 
 
 def build_directories(basedir):
@@ -70,6 +72,14 @@ def build_sample_dicts(sample_tracking, sampleids):
     }
 
 
+def execute_alto_command(run_alto_file):
+    command = "bash %s" % run_alto_file
+    logging.info(command)
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+    for status_url in result.stdout.decode('utf-8').split("\n"):
+        wait_for_terra_submission(status_url)
+
+
 def wait_for_terra_submission(status_url):
     logging.info("Job status: %s" % status_url)
     entries = status_url.split('/')
@@ -77,14 +87,16 @@ def wait_for_terra_submission(status_url):
     response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
     start_time = time.time()
     while response.json()['status'] != 'Done':
-        logging.info({k: v for k, v in response.json().items() if k in ['status', 'submissionDate', 'submissionId', '']})
-        logging.info('\n')
+        logging.info("Job details: %s \n" % {k: v for k, v in response.json().items()
+                                       if k in ['status', 'submissionDate', 'submissionId', '']})
         time.sleep(TERRA_POLL_SPACER)
         response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
         if time.time() - start_time > TERRA_TIMEOUT:
-            raise RuntimeError("Terra pipeline took too long to complete.")
+            logging.error("Terra pipeline took too long to complete.")
+            sys.exit()
 
     for workflow in response.json()['workflows']:
         if workflow['status'] != 'Succeeded':
-            raise RuntimeError("Terra pipeline failed.")
+            logging.error("Terra pipeline failed.")
+            sys.exit()
 
