@@ -68,6 +68,7 @@ def run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace,
     run_alto_file = "%s/run_alto_cellranger_workflow.sh" % (counts_dir)
     alto_method = "cumulus/cellranger_workflow/28"
 
+    open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
     for sampleid in sampledict.keys():
         input_cellranger_file = "%s/%s/input_cellranger.json" % (counts_dir, sampleid)
@@ -158,6 +159,7 @@ def run_cumulus(directories, sample_dicts, alto_workspace, alto_results_folder):
     run_alto_file = "%s/run_alto_cumulus.sh" % (results_dir)
     alto_method = "cumulus/cumulus/43"
 
+    open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
     for sampleid in sampledict.keys():
         input_cumulus_file = "%s/%s/input_cumulus.json" % (results_dir, sampleid)
@@ -238,6 +240,7 @@ def run_cellbender(directories, sample_dicts, alto_workspace, alto_cellbender_fo
     run_alto_file = "%s/run_alto_cellbender.sh" % (cellbender_dir)
     alto_method = "cellbender/remove-background/11"
 
+    open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
     for sampleid in sampledict.keys():
         for sample in sampledict[sampleid]:
@@ -336,6 +339,7 @@ def run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_
     run_alto_file = "%s/run_alto_cellbender_cumulus.sh" % (cellbender_results_dir)
     alto_method = "cumulus/cumulus/43"
 
+    open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
     for sampleid in sampledict.keys():
         input_cellbender_cumulus_file = "%s/%s/input_cumulus.json" % (cellbender_results_dir, sampleid)

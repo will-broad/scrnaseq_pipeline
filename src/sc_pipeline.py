@@ -8,32 +8,21 @@ sample_tracking_file = os.getcwd() + "/sampletracking_guteqtl_rerun.csv"
 gcp_basedir = "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/gut_eqtl"
 email = "dchafamo@broadinstitute.org"
 alto_workspace = "'kco-tech/Gut_eQTL'"
-# alto_workspace = "'regev-hhmi/634-10x cell ranger analysis and troubleshooting'"
 cellranger_version = "6.0.1"
-
-cwd = os.getcwd()
-basedir = cwd + "/" + project_name + "/sc_processed"
-os.makedirs(basedir, exist_ok=True)
-
-directories = build_directories(basedir)
-
-sample_tracking_alldata = pd.read_csv(sample_tracking_file)
-project = sample_tracking_alldata[sample_tracking_alldata.run_pipeline]['project'].tolist()[0]
-seq_dirs = set(sample_tracking_alldata[sample_tracking_alldata.run_pipeline]['seq_dir'])
-
-buckets = build_buckets(gcp_basedir, project)
-alto_folders = build_alto_folders(buckets)
-
-for run_alto_file in ["%s/run_alto_cellranger_workflow.sh" % (directories['counts']),
-                      "%s/run_alto_cumulus.sh" % (directories['results']),
-                      "%s/run_alto_cellbender.sh" % (directories['cellbender']),
-                      "%s/run_alto_cellbender_cumulus.sh" % (directories['cellbender_results'])]:
-    open(run_alto_file, "w").close()
 
 count_matrix_name = "raw_feature_bc_matrix.h5"
 filtered_matrix_name = "filtered_feature_bc_matrix.h5"
 cellbender_matrix_name = "out_FPR_0.01_filtered.h5"
 
+cwd = os.getcwd()
+basedir = cwd + "/" + project_name + "/sc_processed"
+os.makedirs(basedir, exist_ok=True)
+directories = build_directories(basedir)
+sample_tracking_alldata = pd.read_csv(sample_tracking_file)
+project = sample_tracking_alldata[sample_tracking_alldata.run_pipeline]['project'].tolist()[0]
+seq_dirs = set(sample_tracking_alldata[sample_tracking_alldata.run_pipeline]['seq_dir'])
+buckets = build_buckets(gcp_basedir, project)
+alto_folders = build_alto_folders(buckets)
 
 def process_sample(seq_dir):
     sample_tracking = sample_tracking_alldata[sample_tracking_alldata.run_pipeline &
