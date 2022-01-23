@@ -65,8 +65,3 @@ for seq_dir in seq_dirs:
     upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts,sample_tracking, cellbender_matrix_name)
     run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_folders['alto_results'])
 
-
-
-
-
-

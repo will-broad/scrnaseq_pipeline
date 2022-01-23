@@ -3,8 +3,11 @@ import sys
 import os
 import subprocess
 import re
-# from firecloud import fiss
+import time
+import firecloud.api as fapi
 
+TERRA_POLL_SPACER = 600 # 10 minutes
+TERRA_TIMEOUT = 7200 # 2 hours
 
 def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts, cellranger_version):
     bcl_bucket = buckets['bcl']
@@ -50,7 +53,7 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
             input_cellranger_file = "%s/%s/input_cellranger.json" % (counts_dir, sampleid)
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cellranger_file, counts_bucket, sampleid))
             f.write("gsutil cp %s %s/%s/\n" % (input_cellranger_file, counts_bucket, sampleid))
-    command = "cat %s" % uploadcellranger_file
+    command = "bash %s" % uploadcellranger_file
     print(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
@@ -65,15 +68,16 @@ def run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace,
     bash_alto = open(run_alto_file, "a")
     for sampleid in sampledict.keys():
         input_cellranger_file = "%s/%s/input_cellranger.json" % (counts_dir, sampleid)
-        bash_alto.write("alto run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
+        bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
             alto_method, input_cellranger_file, alto_workspace, alto_counts_folder, sampleid))
     bash_alto.close()
 
     print("\n## STEP 2 | Initiate Terra cellranger_workflow pipeline via alto. ##")
-    command = "cat %s" % run_alto_file
+    command = "bash %s" % run_alto_file
     print(command)
-    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
-    # TODO: wait for complete
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+    for status_url in result.stdout.decode('utf-8').split("\n"):
+        wait_for_terra_submission(status_url)
 
 
 def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletracking, count_matrix_name):
@@ -139,7 +143,7 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cumulus_file, resultsbucket, sampleid))
             f.write("gsutil cp %s %s/%s/\n" % (input_cumulus_file, resultsbucket, sampleid))
             # f.write("gsutil cp %s %s/\n" % (cumulusdict[sampleid][5], resultsbucket))
-    command = "cat %s" % uploadcumulus_file
+    command = "bash %s" % uploadcumulus_file
     print(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
@@ -154,17 +158,18 @@ def run_cumulus(directories, sample_dicts, alto_workspace, alto_results_folder):
     bash_alto = open(run_alto_file, "a")
     for sampleid in sampledict.keys():
         input_cumulus_file = "%s/%s/input_cumulus.json" % (results_dir, sampleid)
-        bash_alto.write("alto run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
+        bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
             alto_method, input_cumulus_file, alto_workspace, alto_results_folder, sampleid))
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
     print(
         "\n## STEP 4 | Initiate Terra cumulus pipeline via alto. ##")
-    command = "cat %s" % run_alto_file
+    command = "bash %s" % run_alto_file
     print(command)
-    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
-
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+    for status_url in result.stdout.decode('utf-8').split("\n"):
+        wait_for_terra_submission(status_url)
 
 def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking, count_matrix_name):
     sampledict = sample_dicts['sample']
@@ -217,7 +222,7 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking,
             for sample in sampledict[sampleid]:
                 input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
                 f.write("gsutil cp %s %s/%s/\n" % (input_cellbender_file, cellbenderbucket, sampleid))
-    command = "cat %s" % uploadcellbender_file
+    command = "bash %s" % uploadcellbender_file
     print(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
@@ -233,16 +238,17 @@ def run_cellbender(directories, sample_dicts, alto_workspace, alto_cellbender_fo
     for sampleid in sampledict.keys():
         for sample in sampledict[sampleid]:
             input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
-            bash_alto.write("alto run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
+            bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
                 alto_method, input_cellbender_file, alto_workspace, alto_cellbender_folder, sampleid))
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
     print("\n## STEP 6 | Initiate Terra remove-background pipeline via alto. ##")
-    command = "cat %s" % run_alto_file
+    command = "bash %s" % run_alto_file
     print(command)
-    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
-
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+    for status_url in result.stdout.decode('utf-8').split("\n"):
+        wait_for_terra_submission(status_url)
 
 def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sampletracking, cellbender_matrix_name):
     sampledict = sample_dicts['sample']
@@ -312,7 +318,7 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cellbender_cumulus_file, cellbender_resultsbucket, sampleid))
             f.write("gsutil cp %s %s/%s/\n" % (input_cellbender_cumulus_file, cellbender_resultsbucket, sampleid))
             # f.write("gsutil cp %s %s/\n" % (cumulusdict[sampleid][5], cellbender_resultsbucket))
-    command = "cat %s" % uploadcellbendercumulus_file
+    command = "bash %s" % uploadcellbendercumulus_file
     print(command)
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
@@ -328,16 +334,17 @@ def run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_
     bash_alto = open(run_alto_file, "a")
     for sampleid in sampledict.keys():
         input_cellbender_cumulus_file = "%s/%s/input_cumulus.json" % (cellbender_results_dir, sampleid)
-        bash_alto.write("alto run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
+        bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
             alto_method, input_cellbender_cumulus_file, alto_workspace, alto_results_folder, sampleid))
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
     print("\n## STEP 8 | Initiate Terra cumulus pipeline via alto. ##")
-    command = "cat %s" % run_alto_file
+    command = "bash %s" % run_alto_file
     print(command)
-    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
-
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+    for status_url in result.stdout.decode('utf-8').split("\n"):
+        wait_for_terra_submission(status_url)
 
 def build_directories(basedir):
     directories = {
@@ -400,6 +407,22 @@ def build_sample_dicts(sample_tracking, sampleids):
         'cellranger': cellranger_dict
     }
 
+
+def wait_for_terra_submission(status_url):
+    entries = status_url.split('/')
+    workspace_namespace, workspace_name, submission_id = [entries[idx] for idx in [-4,-3,-1]]
+    response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
+    startTime = time.time()
+    while response.json()['status'] != 'Done':
+        print({ k : v for k, v in response.json().items() if k in ['status', 'submissionDate', 'submissionId', '']})
+        print('\n')
+        time.sleep(TERRA_POLL_SPACER)
+        if time.time() - startTime > TERRA_TIMEOUT:
+            raise RuntimeError("Terra pipeline took too long to complete.")
+
+    for workflow in response.json()['workflows']:
+        if workflow['status'] != 'Succeeded':
+            raise RuntimeError("Terra pipeline failed.")
 
 # gsutil hash local-file
 #
