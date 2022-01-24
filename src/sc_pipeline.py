@@ -4,7 +4,7 @@ import concurrent.futures
 import steps
 import threading
 
-project_name = "gut_eqtl3"
+project_name = "gut_eqtl"
 sample_tracking_file = os.getcwd() + "/sampletracking_guteqtl_rerun.csv"
 gcp_basedir = "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/gut_eqtl"
 email = "dchafamo@broadinstitute.org"

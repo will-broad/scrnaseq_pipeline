@@ -38,7 +38,7 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
     # Running bash script below to upload cellranger samplesheet and input file to Google Cloud Storage Bucket.
     logging.info("\n\n")
     logging.info("STEP 1 | Upload cellranger samplesheet and input file to Google Cloud Storage Bucket. ")
-    uploadcellranger_file = "%s/uploadcellranger.sh" % counts_dir
+    uploadcellranger_file = "%s/uploadcellranger_%s.sh" % (counts_dir, '-'.join(sample_dict.keys()))
     with open(uploadcellranger_file, "w") as f:
         for sampleid in sample_dict.keys():
             samplesheet_cellranger_file = "%s/%s/samplesheet_cellranger.csv" % (counts_dir, sampleid)
@@ -49,15 +49,15 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
 
 
 def run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace, alto_counts_folder):
-    sampledict = sample_dicts['sample']
+    sample_dict = sample_dicts['sample']
     counts_dir = directories['counts']
 
-    run_alto_file = "%s/run_alto_cellranger_workflow.sh" % (counts_dir)
+    run_alto_file = "%s/run_alto_cellranger_workflow_%s.sh" % (counts_dir, '-'.join(sample_dict.keys()))
     alto_method = "cumulus/cellranger_workflow/28"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
-    for sampleid in sampledict.keys():
+    for sampleid in sample_dict.keys():
         input_cellranger_file = "%s/%s/input_cellranger.json" % (counts_dir, sampleid)
         bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
             alto_method, input_cellranger_file, alto_workspace, alto_counts_folder, sampleid))
@@ -69,24 +69,24 @@ def run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace,
 
 
 def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletracking, count_matrix_name):
-    sampledict = sample_dicts['sample']
+    sample_dict = sample_dicts['sample']
     cumulusdict = sample_dicts['cumulus']
     results_dir = directories['results']
     countsbucket = buckets['counts']
     resultsbucket = buckets['results']
 
-    for sampleid in sampledict.keys():
+    for sampleid in sample_dict.keys():
         if not os.path.isdir("%s/%s" % (results_dir, sampleid)):
             os.mkdir("%s/%s" % (results_dir, sampleid))
         samplesheet_cumulus_file = "%s/%s/samplesheet_cumulus.csv" % (results_dir, sampleid)
 
         with open(samplesheet_cumulus_file, "w") as f:
             f.write("Sample,Location\n")
-            for sample in sampledict[sampleid]:
+            for sample in sample_dict[sampleid]:
                 f.write("%s,%s/%s/%s\n" % (sample, countsbucket, sample, count_matrix_name))
 
     # Make input_cumulus file for cumulus.
-    for sampleid in sampledict.keys():
+    for sampleid in sample_dict.keys():
         input_cumulus_file = "%s/%s/input_cumulus.json" % (results_dir, sampleid)
         samplesheet_cumulus = "%s/%s/samplesheet_cumulus.csv" % (resultsbucket, sampleid)
 
@@ -105,9 +105,10 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
     # Running bash script below to upload cumulus samplesheet and input file to Google Cloud Storage Bucket.
     logging.info("\n\n")
     logging.info("STEP 3 | Upload cumulus samplesheet and input file to Google Cloud Storage Bucket. ")
-    uploadcumulus_file = "%s/uploadcumulus_%s.sh" % (results_dir, sampletracking['flowcell'].iloc[0])
+    uploadcumulus_file = "%s/uploadcumulus_%s_%s.sh" % \
+                         (results_dir, sampletracking['flowcell'].iloc[0], '-'.join(sample_dict.keys()))
     with open(uploadcumulus_file, "w") as f:
-        for sampleid in sampledict.keys():
+        for sampleid in sample_dict.keys():
             samplesheet_cumulus_file = "%s/%s/samplesheet_cumulus.csv" % (results_dir, sampleid)
             input_cumulus_file = "%s/%s/input_cumulus.json" % (results_dir, sampleid)
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cumulus_file, resultsbucket, sampleid))
@@ -116,15 +117,15 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
 
 
 def run_cumulus(directories, sample_dicts, alto_workspace, alto_results_folder):
-    sampledict = sample_dicts['sample']
+    sample_dict = sample_dicts['sample']
     results_dir = directories['results']
 
-    run_alto_file = "%s/run_alto_cumulus.sh" % (results_dir)
+    run_alto_file = "%s/run_alto_cumulus_%s.sh" % (results_dir, '-'.join(sample_dict.keys()))
     alto_method = "cumulus/cumulus/43"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
-    for sampleid in sampledict.keys():
+    for sampleid in sample_dict.keys():
         input_cumulus_file = "%s/%s/input_cumulus.json" % (results_dir, sampleid)
         bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
             alto_method, input_cumulus_file, alto_workspace, alto_results_folder, sampleid))
@@ -137,17 +138,17 @@ def run_cumulus(directories, sample_dicts, alto_workspace, alto_results_folder):
 
 
 def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking, count_matrix_name):
-    sampledict = sample_dicts['sample']
+    sample_dict = sample_dicts['sample']
     cellbenderdict = sample_dicts['cellbender']
     cellbender_dir = directories['cellbender']
     cellbenderbucket = buckets['cellbender']
     countsbucket = buckets['counts']
 
-    for sampleid in sampledict.keys():
+    for sampleid in sample_dict.keys():
         if not os.path.isdir("%s/%s" % (cellbender_dir, sampleid)):
             os.mkdir("%s/%s" % (cellbender_dir, sampleid))
 
-        for sample in sampledict[sampleid]:
+        for sample in sample_dict[sampleid]:
             if not os.path.isdir("%s/%s" % (cellbender_dir, sampleid)):
                 os.mkdir("%s/%s" % (cellbender_dir, sampleid))
             input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
@@ -165,26 +166,27 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking,
     # Running bash script below to upload cellbender input file to Google Cloud Storage Bucket.
     logging.info("\n\n")
     logging.info("STEP 5 | Upload cellbender input file to Google Cloud Storage Bucket. ")
-    uploadcellbender_file = "%s/uploadcellbender_%s.sh" % (cellbender_dir, sampletracking['flowcell'].iloc[0])
+    uploadcellbender_file = "%s/uploadcellbender_%s_%s.sh" % \
+                            (cellbender_dir, sampletracking['flowcell'].iloc[0], '-'.join(sample_dict.keys()))
     with open(uploadcellbender_file, "w") as f:
-        for sampleid in sampledict.keys():
-            for sample in sampledict[sampleid]:
+        for sampleid in sample_dict.keys():
+            for sample in sample_dict[sampleid]:
                 input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
                 f.write("gsutil cp %s %s/%s/\n" % (input_cellbender_file, cellbenderbucket, sampleid))
     bash_execute_file(uploadcellbender_file)
 
 
 def run_cellbender(directories, sample_dicts, alto_workspace, alto_cellbender_folder):
-    sampledict = sample_dicts['sample']
+    sample_dict = sample_dicts['sample']
     cellbender_dir = directories['cellbender']
 
-    run_alto_file = "%s/run_alto_cellbender.sh" % (cellbender_dir)
+    run_alto_file = "%s/run_alto_cellbender_%s.sh" % (cellbender_dir, '-'.join(sample_dict.keys()))
     alto_method = "cellbender/remove-background/11"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
-    for sampleid in sampledict.keys():
-        for sample in sampledict[sampleid]:
+    for sampleid in sample_dict.keys():
+        for sample in sample_dict[sampleid]:
             input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
             bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
                 alto_method, input_cellbender_file, alto_workspace, alto_cellbender_folder, sampleid))
@@ -197,13 +199,13 @@ def run_cellbender(directories, sample_dicts, alto_workspace, alto_cellbender_fo
 
 
 def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sampletracking, cellbender_matrix_name):
-    sampledict = sample_dicts['sample']
+    sample_dict = sample_dicts['sample']
     cumulusdict = sample_dicts['cumulus']
     cellbenderbucket = buckets['cellbender']
     cellbender_resultsbucket = buckets['cellbender_results']
     cellbender_results_dir = directories['cellbender_results']
 
-    for sampleid in sampledict.keys():
+    for sampleid in sample_dict.keys():
         if not os.path.isdir("%s/%s" % (cellbender_results_dir, sampleid)):
             os.mkdir("%s/%s" % (cellbender_results_dir, sampleid))
         samplesheet_cellbender_cumulus_file = "%s/%s/samplesheet_cellbender_cumulus.csv" % (
@@ -211,12 +213,12 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
 
         with open(samplesheet_cellbender_cumulus_file, "w") as f:
             f.write("Sample,Location\n")
-            for sample in sampledict[sampleid]:
+            for sample in sample_dict[sampleid]:
                 f.write("%s,%s/%s/%s/%s_%s\n" % (
                     sample, cellbenderbucket, sampleid, sampleid, sampleid, cellbender_matrix_name))
 
         # Make input_cumulus file for cumulus.
-    for sampleid in sampledict.keys():
+    for sampleid in sample_dict.keys():
         input_cellbender_cumulus_file = "%s/%s/input_cumulus.json" % (cellbender_results_dir, sampleid)
         samplesheet_cellbender = "%s/%s/samplesheet_cellbender_cumulus.csv" % (cellbender_resultsbucket, sampleid)
 
@@ -235,10 +237,10 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
         # Running bash script below to upload cumulus samplesheet and input file to Google Cloud Storage Bucket.
     logging.info("\n\n")
     logging.info("STEP 7 | Upload post-cellbender cumulus samplesheet and input file to Google Cloud Storage Bucket. ")
-    uploadcellbendercumulus_file = "%s/uploadcellbendercumulus_%s.sh" % (
-        cellbender_results_dir, sampletracking['flowcell'].iloc[0])
+    uploadcellbendercumulus_file = "%s/uploadcellbendercumulus_%s_%s.sh" % (
+        cellbender_results_dir, sampletracking['flowcell'].iloc[0], '-'.join(sample_dict.keys()))
     with open(uploadcellbendercumulus_file, "w") as f:
-        for sampleid in sampledict.keys():
+        for sampleid in sample_dict.keys():
             samplesheet_cellbender_cumulus_file = "%s/%s/samplesheet_cellbender_cumulus.csv" % (
                 cellbender_results_dir, sampleid)
             input_cellbender_cumulus_file = "%s/%s/input_cumulus.json" % (cellbender_results_dir, sampleid)
@@ -249,16 +251,16 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
 
 
 def run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_results_folder):
-    sampledict = sample_dicts['sample']
+    sample_dict = sample_dicts['sample']
     cellbender_results_dir = directories['cellbender_results']
 
     # Write bash script below to run alto to kick off cumulus jobs from command line to Terra.
-    run_alto_file = "%s/run_alto_cellbender_cumulus.sh" % (cellbender_results_dir)
+    run_alto_file = "%s/run_alto_cellbender_cumulus_%s.sh" % (cellbender_results_dir, '-'.join(sample_dict.keys()))
     alto_method = "cumulus/cumulus/43"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
-    for sampleid in sampledict.keys():
+    for sampleid in sample_dict.keys():
         input_cellbender_cumulus_file = "%s/%s/input_cumulus.json" % (cellbender_results_dir, sampleid)
         bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
             alto_method, input_cellbender_cumulus_file, alto_workspace, alto_results_folder, sampleid))
