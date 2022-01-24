@@ -1,4 +1,5 @@
 import logging
+import threading
 import os
 import re
 import time
@@ -6,14 +7,13 @@ import sys
 import firecloud.api as fapi
 import subprocess
 
-TERRA_POLL_SPACER = 600
+TERRA_POLL_SPACER = 60
 TERRA_TIMEOUT = 18000
 
 
 def build_directories(basedir):
     directories = {
         'scripts': basedir + "/scripts",
-        'logs': basedir + "/logs",
         'fastq': basedir + "/fastq",
         'counts': basedir + "/counts",
         'results': basedir + "/cumulus",
@@ -76,7 +76,11 @@ def execute_alto_command(run_alto_file):
     command = "bash %s" % run_alto_file
     logging.info(command)
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
-    for status_url in result.stdout.decode('utf-8').split("\n"):
+    alto_outputs = [status_url for status_url in result.stdout.decode('utf-8').split("\n") if "http" in status_url]
+    if len(alto_outputs) == 0:
+        logging.info("Alto submission status url not found. %s" % result)
+        sys.exit()
+    for status_url in alto_outputs:
         wait_for_terra_submission(status_url)
 
 
@@ -87,11 +91,11 @@ def wait_for_terra_submission(status_url):
     response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
     start_time = time.time()
     while response.json()['status'] != 'Done':
-        logging.info("Job details: %s \n" % {k: v for k, v in response.json().items()
-                                       if k in ['status', 'submissionDate', 'submissionId', '']})
+        status = {k: v for k, v in response.json().items() if k in ['status', 'submissionDate', 'submissionId']}
+        logging.info("Job details at second %s: %s \n" % ((time.time() - start_time), status))
         time.sleep(TERRA_POLL_SPACER)
         response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
-        if time.time() - start_time > TERRA_TIMEOUT:
+        if (time.time() - start_time) > TERRA_TIMEOUT:
             logging.info("Terra pipeline took too long to complete.")
             sys.exit()
 
@@ -99,4 +103,10 @@ def wait_for_terra_submission(status_url):
         if workflow['status'] != 'Succeeded':
             logging.info("Terra pipeline failed.")
             sys.exit()
+
+
+def bash_execute_file(file):
+    command = "bash %s" % file
+    logging.info(command)
+    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 

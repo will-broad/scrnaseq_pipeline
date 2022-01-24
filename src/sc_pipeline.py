@@ -2,8 +2,9 @@ from utils import *
 import pandas as pd
 import concurrent.futures
 import steps
+import threading
 
-project_name = "gut_eqtl"
+project_name = "gut_eqtl3"
 sample_tracking_file = os.getcwd() + "/sampletracking_guteqtl_rerun.csv"
 gcp_basedir = "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/gut_eqtl"
 email = "dchafamo@broadinstitute.org"
@@ -30,12 +31,13 @@ def process_sample(seq_dir):
     sample_tracking = sample_tracking_alldata[sample_tracking_alldata.run_pipeline &
                                               (sample_tracking_alldata.seq_dir == seq_dir)]
 
+    threading.current_thread().name = 'Thread:' + '_'.join(sample_tracking['sampleid'])
     sample_tracking['Sample'] = sample_tracking['sampleid']
     sample_tracking = sample_tracking[
         ['date', 'run_pipeline', 'Channel Name', 'Sample', 'sampleid', 'condition', 'replicate', 'tissue', 'Lane',
          'Index', 'project', 'reference', 'introns', 'chemistry', 'flowcell', 'seq_dir', 'min_umis', 'min_genes',
          'percent_mito', 'cellbender_expected_cells', 'cellbender_total_droplets_included']]
-    print(sample_tracking)
+    logging.info(sample_tracking)
 
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
 
@@ -50,6 +52,8 @@ def process_sample(seq_dir):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(asctime)s | %(levelname)s |\033[1;32m %(message)s\033[1;0m", level=logging.INFO, datefmt="%H:%M:%S")
+    logging.basicConfig(format="%(asctime)-7s | %(threadName)-15s | %(levelname)-5s | %(message)s",
+                        level=logging.INFO, datefmt="%m-%d %H:%M", filename='{}/{}.log'.format(basedir,project_name),
+                        filemode='w')
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
         executor.map(process_sample, seq_dirs)

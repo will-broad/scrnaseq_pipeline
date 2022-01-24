@@ -1,8 +1,6 @@
 import logging
-import sys
 import os
-import subprocess
-from utils import execute_alto_command
+from utils import execute_alto_command, bash_execute_file
 
 
 def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts, cellranger_version):
@@ -47,9 +45,7 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
             input_cellranger_file = "%s/%s/input_cellranger.json" % (counts_dir, sampleid)
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cellranger_file, counts_bucket, sampleid))
             f.write("gsutil cp %s %s/%s/\n" % (input_cellranger_file, counts_bucket, sampleid))
-    command = "bash %s" % uploadcellranger_file
-    logging.info(command)
-    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
+    bash_execute_file(uploadcellranger_file)
 
 
 def run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace, alto_counts_folder):
@@ -116,9 +112,7 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
             input_cumulus_file = "%s/%s/input_cumulus.json" % (results_dir, sampleid)
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cumulus_file, resultsbucket, sampleid))
             f.write("gsutil cp %s %s/%s/\n" % (input_cumulus_file, resultsbucket, sampleid))
-    command = "bash %s" % uploadcumulus_file
-    logging.info(command)
-    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
+    bash_execute_file(uploadcumulus_file)
 
 
 def run_cumulus(directories, sample_dicts, alto_workspace, alto_results_folder):
@@ -177,9 +171,7 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking,
             for sample in sampledict[sampleid]:
                 input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
                 f.write("gsutil cp %s %s/%s/\n" % (input_cellbender_file, cellbenderbucket, sampleid))
-    command = "bash %s" % uploadcellbender_file
-    logging.info(command)
-    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
+    bash_execute_file(uploadcellbender_file)
 
 
 def run_cellbender(directories, sample_dicts, alto_workspace, alto_cellbender_folder):
@@ -253,9 +245,7 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
             f.write("gsutil cp %s %s/%s/\n" % (samplesheet_cellbender_cumulus_file, cellbender_resultsbucket, sampleid))
             f.write("gsutil cp %s %s/%s/\n" % (input_cellbender_cumulus_file, cellbender_resultsbucket, sampleid))
             # f.write("gsutil cp %s %s/\n" % (cumulusdict[sampleid][5], cellbender_resultsbucket))
-    command = "bash %s" % uploadcellbendercumulus_file
-    logging.info(command)
-    subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
+    bash_execute_file(uploadcellbendercumulus_file)
 
 
 def run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_results_folder):
