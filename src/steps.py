@@ -38,7 +38,8 @@ def upload_cell_ranger_samplesheet_and_input(buckets, directories, sample_dicts,
             f.write("}\n")
 
     # Running bash script below to upload cellranger samplesheet and input file to Google Cloud Storage Bucket.
-    logging.info("\n## STEP 1 | Upload cellranger samplesheet and input file to Google Cloud Storage Bucket. ##")
+    logging.info("\n\n")
+    logging.info("STEP 1 | Upload cellranger samplesheet and input file to Google Cloud Storage Bucket. ")
     uploadcellranger_file = "%s/uploadcellranger.sh" % counts_dir
     with open(uploadcellranger_file, "w") as f:
         for sampleid in sample_dict.keys():
@@ -66,7 +67,8 @@ def run_cell_ranger_mkfastq_and_count(directories, sample_dicts, alto_workspace,
             alto_method, input_cellranger_file, alto_workspace, alto_counts_folder, sampleid))
     bash_alto.close()
 
-    logging.info("\n## STEP 2 | Initiate Terra cellranger_workflow pipeline via alto. ##")
+    logging.info("\n\n")
+    logging.info("STEP 2 | Initiate Terra cellranger_workflow pipeline via alto. ")
     execute_alto_command(run_alto_file)
 
 
@@ -105,7 +107,8 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sampletrackin
             f.write(template)
 
     # Running bash script below to upload cumulus samplesheet and input file to Google Cloud Storage Bucket.
-    logging.info("\n## STEP 3 | Upload cumulus samplesheet and input file to Google Cloud Storage Bucket. ##")
+    logging.info("\n\n")
+    logging.info("STEP 3 | Upload cumulus samplesheet and input file to Google Cloud Storage Bucket. ")
     uploadcumulus_file = "%s/uploadcumulus_%s.sh" % (results_dir, sampletracking['flowcell'].iloc[0])
     with open(uploadcumulus_file, "w") as f:
         for sampleid in sampledict.keys():
@@ -134,8 +137,8 @@ def run_cumulus(directories, sample_dicts, alto_workspace, alto_results_folder):
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
-    logging.info(
-        "\n## STEP 4 | Initiate Terra cumulus pipeline via alto. ##")
+    logging.info("\n\n")
+    logging.info("STEP 4 | Initiate Terra cumulus pipeline via alto. ")
     execute_alto_command(run_alto_file)
 
 
@@ -166,7 +169,8 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sampletracking,
                 f.write(template)
 
     # Running bash script below to upload cellbender input file to Google Cloud Storage Bucket.
-    logging.info("\n## STEP 5 | Upload cellbender input file to Google Cloud Storage Bucket. ##")
+    logging.info("\n\n")
+    logging.info("STEP 5 | Upload cellbender input file to Google Cloud Storage Bucket. ")
     uploadcellbender_file = "%s/uploadcellbender_%s.sh" % (cellbender_dir, sampletracking['flowcell'].iloc[0])
     with open(uploadcellbender_file, "w") as f:
         for sampleid in sampledict.keys():
@@ -195,7 +199,8 @@ def run_cellbender(directories, sample_dicts, alto_workspace, alto_cellbender_fo
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
-    logging.info("\n## STEP 6 | Initiate Terra remove-background pipeline via alto. ##")
+    logging.info("\n\n")
+    logging.info("STEP 6 | Initiate Terra remove-background pipeline via alto. ")
     execute_alto_command(run_alto_file)
 
 
@@ -236,7 +241,8 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
             f.write(template)
 
         # Running bash script below to upload cumulus samplesheet and input file to Google Cloud Storage Bucket.
-    logging.info("\n## STEP 7 | Upload post-cellbender cumulus samplesheet and input file to Google Cloud Storage Bucket. ##")
+    logging.info("\n\n")
+    logging.info("STEP 7 | Upload post-cellbender cumulus samplesheet and input file to Google Cloud Storage Bucket. ")
     uploadcellbendercumulus_file = "%s/uploadcellbendercumulus_%s.sh" % (
         cellbender_results_dir, sampletracking['flowcell'].iloc[0])
     with open(uploadcellbendercumulus_file, "w") as f:
@@ -269,5 +275,6 @@ def run_cumulus_post_cellbender(directories, sample_dicts, alto_workspace, alto_
     bash_alto.close()
 
     # Terminal commands to run alto cumulus bash script.
-    logging.info("\n## STEP 8 | Initiate Terra cumulus pipeline via alto. ##")
+    logging.info("\n\n")
+    logging.info("STEP 8 | Initiate Terra cumulus pipeline via alto. ")
     execute_alto_command(run_alto_file)

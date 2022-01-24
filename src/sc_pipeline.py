@@ -50,6 +50,6 @@ def process_sample(seq_dir):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%H:%M:%S")
+    logging.basicConfig(format="%(asctime)s | %(levelname)s |\033[1;32m %(message)s\033[1;0m", level=logging.INFO, datefmt="%H:%M:%S")
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
         executor.map(process_sample, seq_dirs)
