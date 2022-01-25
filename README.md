@@ -72,7 +72,8 @@ The Cell Ranger `mkfastq` sample sheet must be generated and provided by the use
 ```commandline
 wget http://github.com/dan-broad/ScPipelineKCO/archive/main.zip && unzip main.zip && rm main.zip && cd ScPipelineKCO-main/src
 pip install altocumulus pandas firecloud
-python sc_pipeline.py
+nohup python sc_pipeline.py &
+
 ```
 
 
