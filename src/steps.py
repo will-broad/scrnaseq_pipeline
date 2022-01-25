@@ -5,7 +5,7 @@ from utils import execute_alto_command, bash_execute_file
 
 def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version):
     run_id = os.path.basename(sample_tracking['seq_dir'].tolist()[0])
-    fastq_flowcell_bucket = "%s/%s" % (buckets['fastqs'], run_id)
+    fastq_flowcell_bucket = "%s/%s_fastqs" % (buckets['fastqs'], run_id)
     fastq_flowcell_dir = "%s/%s" % (directories['fastqs'], run_id)
     os.makedirs(fastq_flowcell_dir, exist_ok=True)
 
@@ -66,8 +66,8 @@ def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tra
     cellranger_dict = sample_dicts['cellranger']
 
     run_id = os.path.basename(sample_tracking['seq_dir'].tolist()[0])
-    flowcell = sample_tracking['flowcell'].tolist()[0]
-    fastq_flowcell_bucket = "%s/%s" % (fastqs_bucket, run_id)
+    flowcell = sample_tracking['flowcell'].iloc[0]
+    fastq_flowcell_bucket = "%s/%s_fastqs" % (fastqs_bucket, run_id)
 
     for sample_id in sample_dict.keys():
         os.makedirs("%s/%s" % (counts_dir, sample_id), exist_ok=True)
@@ -76,7 +76,7 @@ def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tra
         with open(samplesheet_cellranger_file, "w") as f:
             f.write("Sample,Reference,Flowcell,Lane,Index,Chemistry\n")
             for sample in sample_dict[sample_id]:
-                fastq_sample_bucket = "%s/fastq_path/%s/%s" % (fastq_flowcell_bucket, flowcell, sample)
+                fastq_sample_bucket = "%s/fastq_path/%s/" % (fastq_flowcell_bucket, flowcell)
                 f.write("%s,%s,%s,%s,%s,%s\n" % (sample, mkfastq_dict[sample][2], fastq_sample_bucket,
                                                  mkfastq_dict[sample][0], mkfastq_dict[sample][1],
                                                  mkfastq_dict[sample][3]))
@@ -247,7 +247,6 @@ def run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, a
                 alto_method, input_cellbender_file, alto_workspace, alto_cellbender_folder, sampleid))
     bash_alto.close()
 
-    # Terminal commands to run alto cumulus bash script.
     logging.info("\n\n")
     logging.info("STEP 8 | Initiate Terra remove-background pipeline via alto. ")
     execute_alto_command(run_alto_file)
@@ -317,7 +316,6 @@ def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto
             alto_method, input_cellbender_cumulus_file, alto_workspace, alto_results_folder, sampleid))
     bash_alto.close()
 
-    # Terminal commands to run alto cumulus bash script.
     logging.info("\n\n")
     logging.info("STEP 10 | Initiate Terra cumulus pipeline via alto. ")
     execute_alto_command(run_alto_file)

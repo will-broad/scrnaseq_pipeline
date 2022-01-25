@@ -85,6 +85,7 @@ def execute_alto_command(run_alto_file):
     if len(alto_outputs) == 0:
         logging.info("Alto submission status url not found. %s" % result)
         sys.exit()
+
     for status_url in alto_outputs:
         wait_for_terra_submission(status_url)
 
