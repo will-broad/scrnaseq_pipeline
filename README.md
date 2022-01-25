@@ -75,7 +75,7 @@ use Google-Cloud-SDK
 gcloud auth login dchafamo@broadinstitute.org
 conda activate /broad/xavierlab_datadeposit/dchafamo/alto
 wget http://github.com/dan-broad/scrnaseq_pipeline/archive/main.zip 
-unzip main.zip && rm main.zip && cd ScPipelineKCO-main/src
+unzip main.zip && rm main.zip && cd scrnaseq_pipeline-main/src
 nohup python sc_pipeline.py &> sc_out.txt &
 ```
 

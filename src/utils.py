@@ -7,7 +7,7 @@ import firecloud.api as fapi
 import subprocess
 import threading
 
-TERRA_POLL_SPACER = 60
+TERRA_POLL_SPACER = 300
 TERRA_TIMEOUT = 18000
 
 alto_lock = threading.Lock()
@@ -98,12 +98,14 @@ def wait_for_terra_submission(status_url):
     start_time = time.time()
     while response.json()['status'] != 'Done':
         status = {k: v for k, v in response.json().items() if k in ['status', 'submissionDate', 'submissionId']}
-        logging.info("Job details at second %s: %s \n" % ((time.time() - start_time), status))
+        logging.info("Job status: %s \n" % status)
         time.sleep(TERRA_POLL_SPACER)
         response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
         if (time.time() - start_time) > TERRA_TIMEOUT:
             logging.info("Terra pipeline took too long to complete.")
             sys.exit()
+    status = {k: v for k, v in response.json().items() if k in ['status', 'submissionDate', 'submissionId']}
+    logging.info("Job status: %s \n" % status)
 
     for workflow in response.json()['workflows']:
         if workflow['status'] != 'Succeeded':
