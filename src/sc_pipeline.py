@@ -32,7 +32,7 @@ def process_sample(seq_dir):
     sample_tracking = sample_tracking_alldata[sample_tracking_alldata.run_pipeline &
                                               (sample_tracking_alldata.seq_dir == seq_dir)]
 
-    threading.current_thread().name = 'Thread:' + '_'.join(sample_tracking['sampleid'])
+    threading.current_thread().name = 'Thread:' + sample_tracking['flowcell'].iloc[0]
     sample_tracking['Sample'] = sample_tracking['sampleid']
     sample_tracking = sample_tracking[
         ['date', 'run_pipeline', 'Channel Name', 'Sample', 'sampleid', 'condition', 'replicate', 'tissue', 'Lane',

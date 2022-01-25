@@ -38,7 +38,7 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
 
 
 def run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_fastqs_folder):
-    run_id = os.path.basename(sample_tracking['seq_dir'].tolist()[0])
+    run_id = os.path.basename(sample_tracking['seq_dir'].iloc[0])
     alto_flowcell_bucket = "%s/%s" % (alto_fastqs_folder, run_id)
     fastq_flowcell_dir = directories['fastqs'] + "/%s" % run_id
 

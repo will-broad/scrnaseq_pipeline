@@ -68,3 +68,9 @@ The first few lines that are printed to the terminal are visual checks that the 
 
 ## User specifications for generating all files
 The Cell Ranger `mkfastq` sample sheet must be generated and provided by the user before this script can run. In addition, the user must specify the location of a Cell Ranger `mkfastq` sample sheet template, that the script will modify with the appropriate settings. **Remember, sample names in the mkfastq sample sheet must follow the conventions described above.**
+
+```commandline
+wget http://github.com/dan-broad/ScPipelineKCO/archive/main.zip && unzip main.zip && rm main.zip && cd ScPipelineKCO-main/src
+```
+
+
