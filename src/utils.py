@@ -1,20 +1,22 @@
 import logging
-import threading
 import os
 import re
 import time
 import sys
 import firecloud.api as fapi
 import subprocess
+import threading
 
 TERRA_POLL_SPACER = 60
 TERRA_TIMEOUT = 18000
+
+alto_lock = threading.Lock()
 
 
 def build_directories(basedir):
     directories = {
         'scripts': basedir + "/scripts",
-        'fastq': basedir + "/fastq",
+        'fastqs': basedir + "/fastqs",
         'counts': basedir + "/counts",
         'results': basedir + "/cumulus",
         'cellbender': basedir + "/cellbenderV2",
@@ -28,7 +30,7 @@ def build_directories(basedir):
 
 def build_buckets(gcp_basedir, project):
     return {
-        'bcl': gcp_basedir + "/bcl_" + project,
+        'fastqs': gcp_basedir + "/fastqs_" + project,
         'counts': gcp_basedir + "/counts_" + project,
         'results': gcp_basedir + "/cumulus_" + project,
         'cellbender': gcp_basedir + "/cellbenderv2_" + project,
@@ -38,6 +40,7 @@ def build_buckets(gcp_basedir, project):
 
 def build_alto_folders(buckets):
     return {
+        'alto_fastqs': re.sub(r'^gs://.*/', "", buckets['fastqs']),
         'alto_counts': re.sub(r'^gs://.*/', "", buckets['counts']),
         'alto_results': re.sub(r'^gs://.*/', "", buckets['results']),
         'alto_cellbender': re.sub(r'^gs://.*/', "", buckets['cellbender']),
@@ -73,10 +76,12 @@ def build_sample_dicts(sample_tracking, sampleids):
 
 
 def execute_alto_command(run_alto_file):
-    command = "bash %s" % run_alto_file
-    logging.info(command)
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
-    alto_outputs = [status_url for status_url in result.stdout.decode('utf-8').split("\n") if "http" in status_url]
+    with alto_lock:
+        command = "bash %s" % run_alto_file
+        logging.info(command)
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
+        alto_outputs = [status_url for status_url in result.stdout.decode('utf-8').split("\n") if "http" in status_url]
+
     if len(alto_outputs) == 0:
         logging.info("Alto submission status url not found. %s" % result)
         sys.exit()
