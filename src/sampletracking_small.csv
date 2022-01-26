@@ -1,4 +1,3 @@
 date,run_pipeline,Channel Name,sampleid,condition,replicate,tissue,Lane,Index,project,project_orig,reference,chemistry,flowcell,seq_dir,min_umis,min_genes,percent_mito,cellbender_expected_cells,cellbender_total_droplets_included,focus,append,calc_signature_scores,introns
 2021_11_18,TRUE,"9116-217168_PBS+RI
-",SCRSP-10274,nuclei,channel1,gut,*,SI-TT-E3,GIDER,PRISM,GRCh38-2020-A,SC3Pv3,HHMKNDRXY,gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/gut_eqtl/bcl_GIDER/210813_SL-NVV_0246_AHHMKNDRXY/,400,200,20,2500,20000,,,,TRUE
-ab18/gut_eqtl/bcl_GIDER/211106_SL-NSE_0209_BH523FDMXY/,400,200,20,2000,20000,,,,TRUE
+",SCRSP-10274,nuclei,channel1,gut,*,SI-TT-E3,GIDER,PRISM,GRCh38-2020-A,SC3Pv3,HHMKNDRXY,gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/gut_eqtl/bcl_GIDER/210813_SL-NVV_0246_AHHMKNDRXY/,400,200,20,2500,20000,,,,TRUEx
