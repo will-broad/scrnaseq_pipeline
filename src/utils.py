@@ -108,6 +108,8 @@ def wait_for_terra_submission(status_url):
         if workflow['status'] != 'Succeeded':
             logging.info("Terra pipeline failed.")
             sys.exit()
+    logging.info("Terra job complete: %s \n" % status)
+
 
 
 def bash_execute_file(file):
