@@ -6,9 +6,9 @@ import concurrent.futures
 import steps
 import threading
 
-project_name = "gut_eqtl12"
+project_name = "gut_eqtl_1"
 sample_tracking_file = os.getcwd() + "/sampletracking_guteqtl_rerun.csv"
-gcp_basedir = "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/gut_eqtl12"
+gcp_basedir = "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/gut_eqtl_1"
 email = "dchafamo@broadinstitute.org"
 alto_workspace = "'kco-tech/Gut_eQTL'"
 cellranger_version = "6.0.1"
