@@ -1,3 +1,5 @@
+import datetime
+
 from utils import *
 import pandas as pd
 import concurrent.futures
@@ -20,25 +22,26 @@ cwd = os.getcwd()
 basedir = cwd + "/" + project_name + "/sc_processed"
 os.makedirs(basedir, exist_ok=True)
 directories = build_directories(basedir)
-sample_tracking_alldata = pd.read_csv(sample_tracking_file)
-project = sample_tracking_alldata[sample_tracking_alldata.run_pipeline]['project'].tolist()[0]
-seq_dirs = set(sample_tracking_alldata[sample_tracking_alldata.run_pipeline]['seq_dir'])
+master_tracking = pd.read_csv(sample_tracking_file)
+project = master_tracking[master_tracking.run_pipeline]['project'].tolist()[0]
+master_tracking['seq_dir'] = master_tracking['seq_dir'].apply(lambda sd: sd[:-1] if sd.endswith('/') else sd)
+seq_dirs = set(master_tracking[master_tracking.run_pipeline]['seq_dir'])
 buckets = build_buckets(gcp_basedir, project)
 alto_dirs = build_alto_folders(buckets)
 
 
 def process_sample(seq_dir):
-    logging.info("Started processing samples in {}".format(seq_dir))
-    sample_tracking = sample_tracking_alldata[sample_tracking_alldata.run_pipeline &
-                                              (sample_tracking_alldata.seq_dir == seq_dir)]
+    sample_tracking = master_tracking[master_tracking.run_pipeline &
+                                      (master_tracking.seq_dir == seq_dir)]
 
     threading.current_thread().name = 'Thread:' + sample_tracking['flowcell'].iloc[0]
+    logging.info("Started processing samples in {}".format(seq_dir))
+
     sample_tracking['Sample'] = sample_tracking['sampleid']
     sample_tracking = sample_tracking[
         ['date', 'run_pipeline', 'Channel Name', 'Sample', 'sampleid', 'condition', 'replicate', 'tissue', 'Lane',
          'Index', 'project', 'reference', 'introns', 'chemistry', 'flowcell', 'seq_dir', 'min_umis', 'min_genes',
          'percent_mito', 'cellbender_expected_cells', 'cellbender_total_droplets_included']]
-    logging.info(sample_tracking)
 
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
 
@@ -60,7 +63,15 @@ def process_sample(seq_dir):
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)-7s | %(threadName)-15s | %(levelname)-5s | %(message)s",
-                        level=logging.INFO, datefmt="%m-%d %H:%M", filename='{}/{}.log'.format(basedir,project_name),
+                        level=logging.INFO, datefmt="%m-%d %H:%M", filename='{}/{}.log'.format(basedir, project_name),
                         filemode='w')
+
+    start_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    logging.info("Running scRNASeq pipeline for project {} on {}".format(project, start_time))
+    logging.info("GCP User: {}".format(email))
+    logging.info("GCP bucket dir: {}".format(gcp_basedir))
+    logging.info("Workspace: {}".format(alto_workspace))
+    logging.info("Master sample tracking file: \n\n {} \n".format(master_tracking.to_markdown()))
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
         executor.map(process_sample, seq_dirs)

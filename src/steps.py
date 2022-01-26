@@ -13,7 +13,6 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
     samplesheet = sample_tracking[['Lane', 'Sample', 'Index', 'reference', 'chemistry', 'seq_dir']]
     samplesheet.to_csv(samplesheet_file, index=False,
                        header=['Lane', 'Sample', 'Index', 'Reference', 'Chemistry', 'Flowcell'])
-    logging.info(samplesheet)
 
     input_cellranger_file = "%s/input_cellranger_mkfastq.json" % fastq_flowcell_dir
 
@@ -28,7 +27,6 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
         f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/genomics-xavier\"\n")
         f.write("}\n")
 
-    logging.info("\n\n")
     logging.info("STEP 1 | Upload cellranger samplesheet and input file to Google Cloud Storage Bucket. ")
     upload_cellranger_file = "%s/upload_cellranger_mkfastq.sh" % fastq_flowcell_dir
     with open(upload_cellranger_file, "w") as f:
@@ -52,7 +50,6 @@ def run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_fa
         alto_method, input_cellranger_file, alto_workspace, alto_flowcell_bucket))
     bash_alto.close()
 
-    logging.info("\n\n")
     logging.info("STEP 2 | Initiate Terra cellranger_workflow pipeline via alto. ")
     execute_alto_command(run_alto_file)
 
@@ -96,7 +93,6 @@ def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tra
             f.write("\t\"cellranger_workflow.include_introns\" : %s\n" % str(cellranger_dict[sample_id][0]).lower())
             f.write("}\n")
 
-    logging.info("\n\n")
     logging.info("STEP 3 | Upload cellranger samplesheet and input file to Google Cloud Storage Bucket. ")
     uploadcellranger_file = "%s/uploadcellranger_%s.sh" % (counts_dir, flowcell)
     with open(uploadcellranger_file, "w") as f:
@@ -123,7 +119,6 @@ def run_cellranger_count(directories, sample_dicts, sample_tracking, alto_worksp
             alto_method, input_cellranger_file, alto_workspace, alto_counts_folder, sampleid))
     bash_alto.close()
 
-    logging.info("\n\n")
     logging.info("STEP 4 | Initiate Terra cellranger_workflow pipeline via alto. ")
     execute_alto_command(run_alto_file)
 
@@ -162,7 +157,6 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sample_tracki
         with open(input_cumulus_file, "w") as f:
             f.write(template)
 
-    logging.info("\n\n")
     logging.info("STEP 5 | Upload cumulus samplesheet and input file to Google Cloud Storage Bucket. ")
     upload_cumulus_file = "%s/uploadcumulus_%s.sh" % (results_dir, flowcell)
     with open(upload_cumulus_file, "w") as f:
@@ -189,7 +183,6 @@ def run_cumulus(directories, sample_dicts, sample_tracking, alto_workspace, alto
             alto_method, input_cumulus_file, alto_workspace, alto_results_folder, sampleid))
     bash_alto.close()
 
-    logging.info("\n\n")
     logging.info("STEP 6 | Initiate Terra cumulus pipeline via alto. ")
     execute_alto_command(run_alto_file)
 
@@ -220,7 +213,6 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking
             with open(input_cellbender_file, "w") as f:
                 f.write(template)
 
-    logging.info("\n\n")
     logging.info("STEP 7 | Upload cellbender input file to Google Cloud Storage Bucket. ")
     uploadcellbender_file = "%s/uploadcellbender_%s.sh" % (cellbender_dir, sample_tracking['flowcell'].iloc[0])
     with open(uploadcellbender_file, "w") as f:
@@ -247,7 +239,6 @@ def run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, a
                 alto_method, input_cellbender_file, alto_workspace, alto_cellbender_folder, sampleid))
     bash_alto.close()
 
-    logging.info("\n\n")
     logging.info("STEP 8 | Initiate Terra remove-background pipeline via alto. ")
     execute_alto_command(run_alto_file)
 
@@ -287,7 +278,6 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
         with open(input_cellbender_cumulus_file, "w") as f:
             f.write(template)
 
-    logging.info("\n\n")
     logging.info("STEP 9 | Upload post-cellbender cumulus samplesheet and input file to Google Cloud Storage Bucket. ")
     uploadcellbendercumulus_file = "%s/uploadcellbendercumulus_%s.sh" % (
         cellbender_results_dir, sample_tracking['flowcell'].iloc[0])
@@ -316,6 +306,5 @@ def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto
             alto_method, input_cellbender_cumulus_file, alto_workspace, alto_results_folder, sampleid))
     bash_alto.close()
 
-    logging.info("\n\n")
     logging.info("STEP 10 | Initiate Terra cumulus pipeline via alto. ")
     execute_alto_command(run_alto_file)

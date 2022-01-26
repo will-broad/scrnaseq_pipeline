@@ -6,6 +6,7 @@ import sys
 import firecloud.api as fapi
 import subprocess
 import threading
+import json
 
 TERRA_POLL_SPACER = 300
 TERRA_TIMEOUT = 18000
@@ -61,11 +62,6 @@ def build_sample_dicts(sample_tracking, sampleids):
         cellbender_dict[row['sampleid']] = [row['cellbender_expected_cells'], row['cellbender_total_droplets_included']]
         cellranger_dict[row['sampleid']] = [row['introns']]
 
-    logging.info(sample_dict)
-    logging.info(mkfastq_dict)
-    logging.info(cumulus_dict)
-    logging.info(cellbender_dict)
-
     return {
         'sample': sample_dict,
         'mkfastq': mkfastq_dict,
@@ -78,7 +74,7 @@ def build_sample_dicts(sample_tracking, sampleids):
 def execute_alto_command(run_alto_file):
     with alto_lock:
         command = "bash %s" % run_alto_file
-        logging.info(command)
+        logging.info("Executing command: `{}`".format(command))
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
         alto_outputs = [status_url for status_url in result.stdout.decode('utf-8').split("\n") if "http" in status_url]
 
@@ -95,9 +91,10 @@ def wait_for_terra_submission(status_url):
     entries = status_url.split('/')
     workspace_namespace, workspace_name, submission_id = [entries[idx] for idx in [-4, -3, -1]]
     response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
+    log_workflow_details(response)
     start_time = time.time()
     while response.json()['status'] != 'Done':
-        status = {k: v for k, v in response.json().items() if k in ['status', 'submissionDate', 'submissionId']}
+        status = [v for k, v in response.json().items() if k in ['status', 'submissionId']]
         logging.info("Job status: %s \n" % status)
         time.sleep(TERRA_POLL_SPACER)
         response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
@@ -115,6 +112,22 @@ def wait_for_terra_submission(status_url):
 
 def bash_execute_file(file):
     command = "bash %s" % file
-    logging.info(command)
+    logging.info("Executing command: `{}`".format(command))
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
+
+def log_workflow_details(response):
+    try:
+        formatted_response = response.json()
+        formatted_response['workflow_details'] = []
+        for workflow in response.json()['workflows']:
+            workflow['input'] = {}
+            for res in workflow['inputResolutions']:
+                workflow['input'][res['inputName']] = res['value']
+            del workflow['inputResolutions']
+            formatted_response['workflow_details'].append(workflow)
+        del formatted_response['workflows']
+        for line in json.dumps(formatted_response, sort_keys=True, indent=4).split('\n'):
+            logging.info(line)
+    except:
+        logging.info('Unable to gather workflow input.')
