@@ -14,7 +14,7 @@ pip install firecloud
 pip install altocumulus
 
 #
-# google cloud VM
+# google cloud VM create
 
 cd /tmp || exit
 sudo apt install unzip
@@ -28,6 +28,11 @@ conda install pandas -y
 conda install -c conda-forge google-cloud-sdk -y
 pip install altocumulus
 pip install firecloud
+pip install tabulate
 
+#
+#
+conda activate alto
 gcloud auth application-default login  --no-launch-browser
+nohup python sc_pipeline.py &> sc_out.txt &
 
