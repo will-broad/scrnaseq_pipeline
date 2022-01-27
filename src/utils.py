@@ -95,7 +95,7 @@ def wait_for_terra_submission(status_url):
     start_time = time.time()
     while response.json()['status'] != 'Done':
         status = [v for k, v in response.json().items() if k in ['status', 'submissionId']]
-        logging.info("Job status: %s \n" % status)
+        logging.info("Job status: %s " % status)
         time.sleep(TERRA_POLL_SPACER)
         response = fapi.get_submission(workspace_namespace, workspace_name, submission_id)
         if (time.time() - start_time) > TERRA_TIMEOUT:
@@ -109,7 +109,6 @@ def wait_for_terra_submission(status_url):
             logging.info("Terra pipeline failed.")
             sys.exit()
     logging.info("Terra job complete: %s \n" % status)
-
 
 
 def bash_execute_file(file):

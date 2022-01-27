@@ -36,3 +36,7 @@ conda activate alto
 gcloud auth application-default login  --no-launch-browser
 nohup python sc_pipeline.py &> sc_out.txt &
 
+
+#
+# R env
+sudo apt install r-base-core libssl-dev libcurl4-openssl-dev
