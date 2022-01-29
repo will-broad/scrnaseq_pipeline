@@ -24,7 +24,7 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
         f.write("\t\"cellranger_workflow.cellranger_version\" : \"%s\",\n" % cellranger_version)
         f.write("\t\"cellranger_workflow.run_mkfastq\" : true,\n")
         f.write("\t\"cellranger_workflow.run_count\" : false,\n")
-        f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/genomics-xavier\"\n")
+        f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/microbiome-xavier\"\n")
         f.write("}\n")
 
     logging.info("STEP 1 | Upload cellranger samplesheet and input file to Google Cloud Storage Bucket. ")

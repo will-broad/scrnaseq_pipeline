@@ -57,15 +57,22 @@ docker tag conda-alto-0.0.1 gcr.io/microbiome-xavier/conda-alto:0.0.1
 docker push gcr.io/microbiome-xavier/conda-alto:0.0.1
 gsutil iam ch serviceAccount:scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com:objectViewer gs://us.artifacts.microbiome-xavier.appspot.com/
 gsutil iam ch serviceAccount:scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com:objectViewer gs://artifacts.microbiome-xavier.appspot.com/
+gsutil iam ch serviceAccount:scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com:objectViewer gs://us.artifacts.genomics-xavier.appspot.com/
+gsutil iam ch serviceAccount:scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com:objectViewer gs://artifacts.genomics-xavier.appspot.com/
 
 gcloud auth configure-docker
 
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
-  --image "gcr.io/microbiome-xavier/conda-alto" \
-  --logging "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/scrnaseq-pipeline-logs/" \
-  --script submit.sh
-
+  --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --timeout '2d'\
+  --env PROJECT_NAME="scp-test" \
+  --env GCP_BUCKET_BASEDIR="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/scp-test" \
+  --env EMAIL="dchafamo@broadinstitute.org" \
+  --env TERRA_WORKSPACE="'kco-tech/Gut_eQTL'" \
+  --input SAMPLE_TRACKING_FILE="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/scp-test/sample_tracking_small.csv" \
+  --output PIPELINE_LOGS="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/scp-test/logs/execution.log" \
+  --logging "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/scp-test/logs/" \
+  --command 'python /resources/scrnaseq_pipeline-master/src/sc_pipeline.py'
 
 """
 GCP GCE VM R ENV
