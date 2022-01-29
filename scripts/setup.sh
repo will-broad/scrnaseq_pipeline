@@ -57,8 +57,6 @@ docker tag conda-alto-0.0.1 gcr.io/microbiome-xavier/conda-alto:0.0.1
 docker push gcr.io/microbiome-xavier/conda-alto:0.0.1
 gsutil iam ch serviceAccount:scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com:objectViewer gs://us.artifacts.microbiome-xavier.appspot.com/
 gsutil iam ch serviceAccount:scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com:objectViewer gs://artifacts.microbiome-xavier.appspot.com/
-gsutil iam ch serviceAccount:scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com:objectViewer gs://us.artifacts.genomics-xavier.appspot.com/
-gsutil iam ch serviceAccount:scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com:objectViewer gs://artifacts.genomics-xavier.appspot.com/
 
 gcloud auth configure-docker
 
