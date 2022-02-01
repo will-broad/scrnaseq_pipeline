@@ -38,8 +38,8 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-
-#gcloud auth configure-docker
+pip install --upgrade dsub
+gcloud auth configure-docker
 
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
