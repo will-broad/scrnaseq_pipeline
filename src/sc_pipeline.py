@@ -15,6 +15,7 @@ sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="sampletracking
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
 email = os.getenv("EMAIL", default="dchafamo@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
+count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="raw_feature_bc_matrix.h5")  # filtered_feature_bc_matrix.h5
 
 
 """
@@ -22,8 +23,6 @@ Set global variables + Preprocess Sample tracking file
 """
 cellranger_version = "6.0.1"
 max_parallel_threads = 30
-count_matrix_name = "raw_feature_bc_matrix.h5"
-filtered_matrix_name = "filtered_feature_bc_matrix.h5"
 cellbender_matrix_name = "out_FPR_0.01_filtered.h5"
 cwd = os.getcwd()
 basedir = cwd + "/" + project_name + "/sc_processed"
