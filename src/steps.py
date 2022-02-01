@@ -89,7 +89,7 @@ def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tra
             f.write("\t\"cellranger_workflow.cellranger_version\" : \"%s\",\n" % cellranger_version)
             f.write("\t\"cellranger_workflow.run_mkfastq\" : false,\n")
             f.write("\t\"cellranger_workflow.run_count\" : true,\n")
-            f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/genomics-xavier\",\n")
+            f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/microbiome-xavier\",\n")
             f.write("\t\"cellranger_workflow.include_introns\" : %s\n" % str(cellranger_dict[sample_id][0]).lower())
             f.write("}\n")
 
