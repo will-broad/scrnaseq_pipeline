@@ -2,7 +2,7 @@
 
 This code is written to process all the samples listed in a sample sheet containing information on all your samples. The code can process multiple biological samples coming from a sample tracking file. Individual count matrices are made for each 10x channel by `cellranger_workflow`.
 
-##Sample tracking file
+## Sample tracking file
 
 The sample tracking file, in csv format, is a useful way to track the important information for each sample, and is needed to run this script. Each sample requires the following text fields.
 - date: The date your samples are processed in yyyy_mm_dd format.
