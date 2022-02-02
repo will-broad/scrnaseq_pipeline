@@ -93,3 +93,26 @@ R
 # library(devtools)
 # .libPaths( c( "~/rLibs" , .libPaths() ) )
 # install_github("velocyto-team/velocyto.R")
+
+"""
+R VM INSTALL
+"""
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install r-base r-base-dev
+sudo apt-get install gdebi-core
+wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.2.5019-amd64.deb
+sudo gdebi rstudio-server-1.2.5019-amd64.deb
+sudo apt-get install libcurl4-openssl-dev libssl-dev libxml2-dev
+sudo adduser rstudio
+sudo rstudio-server start
+
+"""
+"""
+conda install -c r r=3.5.1 rstudio
+conda install -c conda-forge r-rcurl r-reticulate r-ggplot2 r-ggplot2 r-tidyverse r-seurat r-gridExtra r-grid r-pheatmap r-gsa
+conda install -c bioconda bioconductor-singler bioconductor-celldex
+alias rstudio3umap="RSTUDIO_WHICH_R=/Users/shu/anaconda3/envs/r_3.5.1/bin/R open -a rstudio"
+/Users/dchafamo/local/projects/scrnaseq_pipeline/analysis/umap3/lib/R/bin/R
+# .libPaths(c("/Users/dchafamo/local/projects/scrnaseq_pipeline/analysis/umap3/lib/R/library", .libPaths())
+
