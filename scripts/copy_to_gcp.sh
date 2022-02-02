@@ -21,7 +21,7 @@ until gsutil -m cp -c -n -L "$BASENAME.log" -r "$SRC" "$DEST"; do
 done
 
 #   cd ~/scripts
-#   nohup bash copy_to_gcp.sh /ahg/regev_nextseq/Data/211015_NB501164_1301_AH7MMTBGXK gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL/bcl_GIDER/211015_NB501164_1301_AH7MMTBGXK 211015_NB501164_1301_AH7MMTBGXK &> 211015_NB501164_1301_AH7MMTBGXK.out &
+#   nohup bash copy_to_gcp.sh /ahg/regev_gp_transfers/SL-NVA/220201_SL-NSB_0251_AH52GKDMXY gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL/bcl_GIDER/220201_SL-NSB_0251_AH52GKDMXY 2220201_SL-NSB_0251_AH52GKDMXY &> 220201_SL-NSB_0251_AH52GKDMXY.out &
 
 #gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL/bcl_GIDER/210726_NB501164_1265_AHJLCVBGXJ/,/ahg/regev_nextseq/Data/210726_NB501164_1265_AHJLCVBGXJ
 #gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL/bcl_GIDER/210729_NB501337_0894_AHTHNYBGXJ/,/ahg/regev_nextseq/Data02/210729_NB501337_0894_AHTHNYBGXJ

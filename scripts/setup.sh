@@ -45,6 +45,7 @@ conda install -c conda-forge google-cloud-sdk oauth2client -y
 pip install altocumulus firecloud tabulate
 # copy service account key to /tmp/service_account.json
 export GOOGLE_APPLICATION_CREDENTIALS='/tmp/service_account.json'
+gcloud auth activate-service-account scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com --key-file=/home/dchafamo/.config/gcloud/sa.json --project=microbiome-xavier
 nohup python sc_pipeline.py &> sc_out.txt &
 
 
@@ -106,6 +107,8 @@ sudo gdebi rstudio-server-1.2.5019-amd64.deb
 sudo apt-get install libcurl4-openssl-dev libssl-dev libxml2-dev
 sudo adduser rstudio
 sudo rstudio-server start
+sudo usermod -aG sudo rstudio
+
 
 """
 """
