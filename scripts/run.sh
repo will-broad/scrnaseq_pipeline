@@ -44,12 +44,12 @@ gcloud auth configure-docker
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
   --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --timeout '2d'\
-  --logging "$gcp_bucket_basedir/logs/" \
+  --logging "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0202/logs/" \
   --command "wget http://github.com/dan-broad/scrnaseq_pipeline/archive/master.zip && unzip master.zip && cd scrnaseq_pipeline-master/src && python sc_pipeline.py" \
-  --output PIPELINE_LOGS="$gcp_bucket_basedir/logs/execution.log" \
-  --input SAMPLE_TRACKING_FILE="$sample_tracking_file" \
-  --env PROJECT_NAME="$project_name" \
-  --env GCP_BUCKET_BASEDIR="$gcp_bucket_basedir" \
-  --env EMAIL="$email" \
-  --env TERRA_WORKSPACE="$workspace" \
-  --env COUNT_MATRIX_NAME="${count_matrix_name}"
+  --output PIPELINE_LOGS="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0202/logs/execution_02022022.log" \
+  --input SAMPLE_TRACKING_FILE="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0202/sampletracking_guteqtl_0202222.csv" \
+  --env PROJECT_NAME="Gut_eQTL_0202" \
+  --env GCP_BUCKET_BASEDIR="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0202" \
+  --env EMAIL="dchafamo@broadinstitute.org" \
+  --env TERRA_WORKSPACE="'kco-tech/Gut_eQTL_0202'" \
+  --env COUNT_MATRIX_NAME="filtered_feature_bc_matrix.h5"

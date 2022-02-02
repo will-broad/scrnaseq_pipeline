@@ -15,7 +15,7 @@ sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="sampletracking
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
 email = os.getenv("EMAIL", default="dchafamo@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
-count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="raw_feature_bc_matrix.h5")  # filtered_feature_bc_matrix.h5
+count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")  # filtered_feature_bc_matrix.h5
 
 
 """
@@ -65,11 +65,12 @@ def process_flowcell(seq_dir):
     steps.upload_cumulus_samplesheet(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
     steps.run_cumulus(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
 
-    steps.upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
-    steps.run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_cellbender'])
-
-    steps.upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sample_tracking, cellbender_matrix_name)
-    steps.run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
+    # steps.upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
+    # steps.run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_cellbender'])
+    #
+    # steps.upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sample_tracking, cellbender_matrix_name)
+    # steps.run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
+    #
 
 
 if __name__ == "__main__":
@@ -85,3 +86,9 @@ if __name__ == "__main__":
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
         executor.map(process_flowcell, seq_dirs)
+
+    # TODO: download to uger:
+    # web summary
+    # cumulus h5ad, umap, filt.xls
+    # cellbender pdf
+    # don't run cell bender right away - use
