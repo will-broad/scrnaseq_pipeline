@@ -98,6 +98,7 @@ R
 """
 R VM INSTALL
 """
+wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install r-base r-base-dev
@@ -108,11 +109,12 @@ sudo apt-get install libcurl4-openssl-dev libssl-dev libxml2-dev
 sudo adduser rstudio
 sudo rstudio-server start
 sudo usermod -aG sudo rstudio
+sudo usermod -aG dchafamo rstudio
 
 
 """
 """
-conda install -c r r=3.5.1 rstudio
+conda install -c r r=4.0.1 rstudio
 conda install -c conda-forge r-rcurl r-reticulate r-ggplot2 r-ggplot2 r-tidyverse r-seurat r-gridExtra r-grid r-pheatmap r-gsa
 conda install -c bioconda bioconductor-singler bioconductor-celldex
 alias rstudio3umap="RSTUDIO_WHICH_R=/Users/shu/anaconda3/envs/r_3.5.1/bin/R open -a rstudio"
