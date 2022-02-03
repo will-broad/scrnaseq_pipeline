@@ -92,3 +92,4 @@ if __name__ == "__main__":
     # cumulus h5ad, umap, filt.xls
     # cellbender pdf
     # don't run cell bender right away - use
+    # samples independent in threads
