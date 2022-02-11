@@ -56,8 +56,8 @@ def process_flowcell(seq_dir):
 
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
 
-    steps.upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version)
-    steps.run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_dirs['alto_fastqs'])
+    # steps.upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version)
+    # steps.run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_dirs['alto_fastqs'])
 
     steps.upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tracking, cellranger_version)
     steps.run_cellranger_count(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_counts'])
