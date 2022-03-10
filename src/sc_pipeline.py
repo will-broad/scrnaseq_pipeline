@@ -15,7 +15,8 @@ sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="sampletracking
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
 email = os.getenv("EMAIL", default="dchafamo@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
-count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")  # filtered_feature_bc_matrix.h5
+count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
+steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT,CUMULUS").split(',')
 
 
 """
@@ -56,21 +57,25 @@ def process_flowcell(seq_dir):
 
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
 
-    steps.upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version)
-    steps.run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_dirs['alto_fastqs'])
+    if "MKFASTQ" in steps_to_run:
+        steps.upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version)
+        steps.run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_dirs['alto_fastqs'])
 
-    steps.upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tracking, cellranger_version)
-    steps.run_cellranger_count(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_counts'])
+    if "COUNT" in steps_to_run:
+        steps.upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tracking, cellranger_version)
+        steps.run_cellranger_count(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_counts'])
 
-    steps.upload_cumulus_samplesheet(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
-    steps.run_cumulus(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
+    if "CUMULUS" in steps_to_run:
+        steps.upload_cumulus_samplesheet(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
+        steps.run_cumulus(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
 
-    # steps.upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
-    # steps.run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_cellbender'])
-    #
-    # steps.upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sample_tracking, cellbender_matrix_name)
-    # steps.run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
-    #
+    if "CELLBENDER" in steps_to_run:
+        steps.upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
+        steps.run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_cellbender'])
+
+    if "CELLBENDER_CUMULUS" in steps_to_run:
+        steps.upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sample_tracking, cellbender_matrix_name)
+        steps.run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
 
 
 if __name__ == "__main__":
@@ -82,14 +87,9 @@ if __name__ == "__main__":
     logging.info("GCP User: {}".format(email))
     logging.info("GCP bucket dir: {}".format(gcp_basedir))
     logging.info("Workspace: {}".format(alto_workspace))
+    logging.info("Count matrix name: {}".format(count_matrix_name))
+    logging.info("Steps: {}".format(steps_to_run))
     logging.info("Master sample tracking file: \n\n {} \n".format(master_tracking.to_markdown()))
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
         executor.map(process_flowcell, seq_dirs)
-
-    # TODO: download to uger:
-    # web summary
-    # cumulus h5ad, umap, filt.xls
-    # cellbender pdf
-    # don't run cell bender right away - use
-    # samples independent in threads
