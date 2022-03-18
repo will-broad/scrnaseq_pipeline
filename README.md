@@ -33,7 +33,9 @@ bash scripts/run.sh --project-name "scp-test" \
  --sample-tracking-file "gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/scp-test/sample_tracking_small.csv" \
  --email "dchafamo@broadinstitute.org" \
  --workspace "'kco-tech/Gut_eQTL'" \
- --count-matrix-name "raw_feature_bc_matrix.h5"
+ --count-matrix-name "raw_feature_bc_matrix.h5" \
+ --steps "MKFASTQ,COUNT,CUMULUS"
+ 
 ```
 
 
