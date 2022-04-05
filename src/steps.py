@@ -25,7 +25,7 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
         f.write("\t\"cellranger_workflow.run_mkfastq\" : true,\n")
         f.write("\t\"cellranger_workflow.run_count\" : false,\n")
         f.write("\t\"cellranger_workflow.mkfastq_disk_space\" : %s,\n" % diskspace)
-        f.write("\t\"cellranger_workflow.memory\" : %s,\n" % memory)
+        f.write("\t\"cellranger_workflow.memory\" : \"%s\",\n" % memory)
         f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/microbiome-xavier\"\n")
         f.write("}\n")
 
