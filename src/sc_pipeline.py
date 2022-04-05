@@ -17,8 +17,8 @@ email = os.getenv("EMAIL", default="dchafamo@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
 count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
 steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT,CUMULUS").split(',')
-mkfastq_disk_space = os.getenv("MKFASTQ_DISKSPACE", default=1500)
-mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default=32)
+mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=1500))
+mkfastq_memory = int(os.getenv("MKFASTQ_MEMORY", default=32))
 
 """
 Set global variables + Preprocess Sample tracking file
