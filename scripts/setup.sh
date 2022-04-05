@@ -121,3 +121,18 @@ alias rstudio3umap="RSTUDIO_WHICH_R=/Users/shu/anaconda3/envs/r_3.5.1/bin/R open
 /Users/dchafamo/local/projects/scrnaseq_pipeline/analysis/umap3/lib/R/bin/R
 # .libPaths(c("/Users/dchafamo/local/projects/scrnaseq_pipeline/analysis/umap3/lib/R/library", .libPaths())
 
+
+
+"""
+Bulk Downloading from terra to uger
+"""
+mkdir /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325
+mkdir /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/counts
+mkdir /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/cumulus
+use Google-Cloud-SDK
+gsutil -m rsync -r -x '^(?!.*\web_summary.html$).*' gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0325/counts_gut_eqtl/ /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/counts/
+gsutil -m rsync -r -x '^(?!.*\.mtx.gz$).*' gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0325/counts_gut_eqtl /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/counts/
+gsutil -m rsync -r -x '^(?!.*\.tsv.gz$).*' gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0325/counts_gut_eqtl /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/counts/
+gsutil -m rsync -r -x '^(?!.*\iltered_feature_bc_matrix.h5$).*' gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0325/counts_gut_eqtl /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/counts/
+gsutil -m rsync -r -x '^(?!.*\GRCh38-rna.h5ad$).*' gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0325/cumulus_gut_eqtl /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/cumulus/
+

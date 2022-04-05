@@ -17,7 +17,8 @@ email = os.getenv("EMAIL", default="dchafamo@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
 count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
 steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT,CUMULUS").split(',')
-
+mkfastq_disk_space = os.getenv("MKFASTQ_DISKSPACE", default=1500)
+mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default=32)
 
 """
 Set global variables + Preprocess Sample tracking file
@@ -58,7 +59,8 @@ def process_flowcell(seq_dir):
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
 
     if "MKFASTQ" in steps_to_run:
-        steps.upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version)
+        steps.upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version,
+                                              mkfastq_disk_space, mkfastq_memory)
         steps.run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_dirs['alto_fastqs'])
 
     if "COUNT" in steps_to_run:

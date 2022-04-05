@@ -18,7 +18,7 @@ The sample tracking file, in csv format, is a useful way to track the important 
 - reference: The genome reference to use when Cell Ranger `count` is creating the counts matrices. Please choose from one of references listed in Cumulus read the docs.
 - chemistry: The sequencing chemistry used.
 - flowcell: The flowcell id from your sequencing run.
-- seq_dir: The directory of your sequencing results.
+- seq_dir: The directory of your sequencing results in GCP.
 - min_umis: the min number of UMIs you'd like to use for filtering when you run cumulus pegasus.
 - min_genes: the min number of genes you'd like to use for filtering when you run cumulus pegasus.
 - percent_mito: the max percentage of expression coming from mito genes that you'd like to set for filtering when you run cumulus pegasus.
@@ -26,6 +26,10 @@ The sample tracking file, in csv format, is a useful way to track the important 
 - append: the genome you'd like to append to your counts matrix. These counts will not be included in the main analysis workflow.
 - calc_signature_scores: a path to a .gmt file you can use for testing gene signatures using cumulus pegasus.
 
+
+## Executing Pipeline
+
+Pipeline can be run on UGER or GCP. To run on UGER clone this repository and 
 
 ```commandline
 bash scripts/run.sh --project-name "scp-test" \

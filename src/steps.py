@@ -3,7 +3,7 @@ import os
 from utils import execute_alto_command, bash_execute_file
 
 
-def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version):
+def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version, diskspace, memory):
     run_id = os.path.basename(sample_tracking['seq_dir'].tolist()[0])
     fastq_flowcell_bucket = "%s/%s_fastqs" % (buckets['fastqs'], run_id)
     fastq_flowcell_dir = "%s/%s" % (directories['fastqs'], run_id)
@@ -24,6 +24,8 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
         f.write("\t\"cellranger_workflow.cellranger_version\" : \"%s\",\n" % cellranger_version)
         f.write("\t\"cellranger_workflow.run_mkfastq\" : true,\n")
         f.write("\t\"cellranger_workflow.run_count\" : false,\n")
+        f.write("\t\"cellranger_workflow.mkfastq_disk_space\" : %s,\n" % diskspace)
+        f.write("\t\"cellranger_workflow.memory\" : %s,\n" % memory)
         f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/microbiome-xavier\"\n")
         f.write("}\n")
 
