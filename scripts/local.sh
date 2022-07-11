@@ -1,13 +1,21 @@
 #!/bin/bash
 
-conda activate alto
+#
+# conda create -n dsub_env python=3 pip
+# conda activate dsub_env
+# pip install --upgrade dsub
+# conda install -c conda-forge google-cloud-sdk
+# gcloud auth configure-docker
+#
 
-dir_name="Gut_eQTL_0331_fresh"
-gcp_bucket_basedir="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/${dir_name}"
-sample_tracking_file="${gcp_bucket_basedir}/sampletracking_guteqtl_033122_freshgut.csv"
-project_name="Gut_eQTL"
+# conda activate dsub_env
+
+dir_name="test_run"
+gcp_bucket_basedir="gs://fc-secure-b4e284d7-0ea0-43a6-8095-ee3256e94e97/${dir_name}"
+sample_tracking_file="${gcp_bucket_basedir}/sampletracking_small.csv"
+project_name="test_run"
 email="dchafamo@broadinstitute.org"
-workspace="'kco-tech/Gut_eQTL'"
+workspace="'kco-tech/tutorial'"
 count_matrix_name="raw_feature_bc_matrix.h5"
 steps="MKFASTQ,COUNT,CUMULUS"
 
