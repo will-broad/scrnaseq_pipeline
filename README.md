@@ -27,6 +27,14 @@ The sample tracking file, in csv format, is a useful way to track the important 
 - calc_signature_scores: a path to a .gmt file you can use for testing gene signatures using cumulus pegasus.
 
 
+## Steps
+1. Create a Terra workspace https://support.terra.bio/hc/en-us/sections/360004538992-Workspaces
+   - set authorization domain to klarman_cell_observatory
+2. Share workspace with scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com and klarman_cell_observatory@firecloud.org . Make them owners.
+3. Import cumulus/cellranger_workflow from Broad Methods Repository (https://support.terra.bio/hc/en-us/sections/360004147011-Workflows)
+4. Create sample tracking csv file and upload it to the google cloud folder of your workspace
+5. Execute pipeline 
+
 ## Executing Pipeline
 
 Pipeline can be run on UGER or GCP. To run on UGER clone this repository and 
