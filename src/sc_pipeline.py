@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from utils import *
 import pandas as pd
@@ -125,13 +126,16 @@ if __name__ == "__main__":
     logging.info("Steps: {}".format(steps_to_run))
     logging.info("Master sample tracking file: \n\n {} \n".format(master_tracking.to_markdown()))
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
-        method = set(master_tracking[master_tracking.run_pipeline]['method'])
-        if RNA in method:
+    method = set(master_tracking[master_tracking.run_pipeline]['method'])
+    logging.info(f'Methods = {method}')
+    if RNA in method:
+        logging.info('Processing RNA Seq Samples.')
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
             seq_dirs = set(master_tracking[master_tracking.run_pipeline & (master_tracking.method == RNA)]['seq_dir'])
             executor.map(process_rna_flowcell, seq_dirs)
-        if MULTIOME in method:
-            process_multiome()
+    if MULTIOME in method:
+        logging.info('Processing Multiome Samples.')
+        process_multiome()
 
 
 
