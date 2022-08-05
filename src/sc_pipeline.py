@@ -135,7 +135,7 @@ if __name__ == "__main__":
             executor.map(process_rna_flowcell, seq_dirs)
     if MULTIOME in method:
         logging.info('Processing Multiome Samples.')
-        process_multiome()
+        # process_multiome()
 
 
 
