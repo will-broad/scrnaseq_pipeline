@@ -329,18 +329,18 @@ def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cel
         f.write("Sample,Reference,Flowcell,Lane,Index,DataType,Link\n")
         for idx, sample in sample_tracking.iterrows():
             sample_id = f"{sample['Sample']}_{sample['sub_method']}"
-            f.write(f"{sample_id},{sample['reference']},{sample['seq_dir']},{sample['Lane']},{sample['Index']},{sample['sub_method']},{sample['Sample']}")
+            f.write(f"{sample_id},{sample['reference']},{sample['seq_dir']},{sample['Lane']},{sample['Index']},{sample['sub_method']},{sample['Sample']}\n")
 
     include_introns = set(sample_tracking['introns'])
-    if len(include_introns) != 0:
+    if len(include_introns) != 1:
         logging.error("Unable to run samples with introns included and without in the same run. Exiting.")
         exit(1)
     include_introns = include_introns.pop()
 
     with open('templates/cellranger_arc_input_template.json') as f:
-        template = f.read().replace('{input_file}', samplesheet_arc_gcp_file) \
-            .replace('{output_directory}', f"{arc_bucket}/output/") \
-            .replace('{include_introns}', f'"{include_introns}"') \
+        template = f.read().replace('{input_csv}', samplesheet_arc_gcp_file) \
+            .replace('{output_dir}', f"{arc_bucket}/output/") \
+            .replace('"{include_introns}"', f'{str(include_introns).lower()}') \
             .replace('{cellranger_version}', f'{cellranger_version}')
 
     with open(input_arc_file, "w") as f:
@@ -360,11 +360,11 @@ def run_cellranger_arc(buckets, directories, alto_workspace):
     arc_bucket = buckets['cellranger_arc']
 
     run_alto_file = f"{arc_dir}/run_alto_cellranger_arc.sh"
-    alto_method = "cumulus/cumulus/43"
+    alto_method = "cumulus/cellranger_workflow/28"
 
     with open(run_alto_file, "w") as f:
         input_arc_file = f"{arc_dir}/arc/input_arc.json"
-        f.write(f"alto terra run -m {alto_method} -i {input_arc_file} -w {alto_workspace} --bucket-folder {arc_bucket} --no-cache\n")
+        f.write(f"alto terra run -m {alto_method} -i {input_arc_file} -w {alto_workspace} --bucket-folder {arc_bucket}\n")
 
     logging.info("STEP 6 | Initiate Terra cumulus pipeline via alto. ")
     execute_alto_command(run_alto_file)

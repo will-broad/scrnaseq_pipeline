@@ -12,7 +12,7 @@ import os
 Config Section - Modify this section only
 """
 project_name = os.getenv("PROJECT_NAME", default="Gut_eQTL")
-sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="sampletracking_guteqtl_rerun.csv")
+sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/sampletracking_multiome.csv")
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
 email = os.getenv("EMAIL", default="dchafamo@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
@@ -110,7 +110,7 @@ def process_multiome():
     sample_tracking = sample_tracking[sample_sheet_columns]
 
     steps.upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version)
-    steps.run_cellranger_arc(directories, sample_tracking, alto_workspace)
+    steps.run_cellranger_arc(buckets, directories, alto_workspace)
 
 
 if __name__ == "__main__":
@@ -135,7 +135,7 @@ if __name__ == "__main__":
             executor.map(process_rna_flowcell, seq_dirs)
     if MULTIOME in method:
         logging.info('Processing Multiome Samples.')
-        # process_multiome()
+        process_multiome()
 
 
 
