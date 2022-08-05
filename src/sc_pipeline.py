@@ -31,9 +31,9 @@ cwd = os.getcwd()
 basedir = cwd + "/" + project_name + "/sc_processed"
 os.makedirs(basedir, exist_ok=True)
 directories = build_directories(basedir)
-MULTIOME = 'MULTIOME'
-RNA = 'RNA'
-ATAC = 'ATAC'
+MULTIOME = 'multiome'
+RNA = 'rna'
+ATAC = 'atac'
 
 """
 Preprocess Sample tracking file and Sanity check columns
