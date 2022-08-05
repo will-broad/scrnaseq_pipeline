@@ -21,25 +21,44 @@ mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=1500))
 mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="120G")
 
 """
-Set global variables + Preprocess Sample tracking file
+Set global variables
 """
 cellranger_version = "6.0.1"
-max_parallel_threads = 30
+max_parallel_threads = 50
 cellbender_matrix_name = "out_FPR_0.01_filtered.h5"
 cwd = os.getcwd()
 basedir = cwd + "/" + project_name + "/sc_processed"
 os.makedirs(basedir, exist_ok=True)
 directories = build_directories(basedir)
+MULTIOME = 'MULTIOME'
+RNA = 'RNA'
+ATAC = 'ATAC'
+
+"""
+Preprocess Sample tracking file and Sanity check columns
+"""
+
 master_tracking = pd.read_csv(sample_tracking_file)
-project = master_tracking[master_tracking.run_pipeline]['project'].tolist()[0]
 master_tracking['seq_dir'] = master_tracking['seq_dir'].apply(lambda sd: sd[:-1] if sd.endswith('/') else sd)
-seq_dirs = set(master_tracking[master_tracking.run_pipeline]['seq_dir'])
+project = master_tracking[master_tracking.run_pipeline]['project'].tolist()[0]
 buckets = build_buckets(gcp_basedir, project)
 alto_dirs = build_alto_folders(buckets)
 log_file = os.getenv("PIPELINE_LOGS", default='{}/{}.log'.format(basedir, project_name))
 
+sample_sheet_columns = [
+    'date', 'run_pipeline', 'Channel Name', 'Sample', 'sampleid', 'method', 'sub_method', 'condition',
+    'replicate', 'tissue', 'Lane', 'Index', 'project', 'reference', 'introns', 'chemistry', 'flowcell',
+    'seq_dir', 'min_umis', 'min_genes', 'percent_mito', 'cellbender_expected_cells',
+    'cellbender_total_droplets_included'
+]
 
-def process_flowcell(seq_dir):
+for col in sample_sheet_columns:
+    if col not in master_tracking.columns:
+        logging.error(f"Missing columns: {col} in samplesheet. Exiting.")
+        exit(1)
+
+
+def process_rna_flowcell(seq_dir):
     """
     Initiate pipeline for a set of samples within a single Flowcell.
     :param seq_dir: GCP Cloud Storage link to raw BCL directory
@@ -51,10 +70,7 @@ def process_flowcell(seq_dir):
     logging.info("Started processing samples in {}".format(seq_dir))
 
     sample_tracking['Sample'] = sample_tracking['sampleid']
-    sample_tracking = sample_tracking[
-        ['date', 'run_pipeline', 'Channel Name', 'Sample', 'sampleid', 'condition', 'replicate', 'tissue', 'Lane',
-         'Index', 'project', 'reference', 'introns', 'chemistry', 'flowcell', 'seq_dir', 'min_umis', 'min_genes',
-         'percent_mito', 'cellbender_expected_cells', 'cellbender_total_droplets_included']]
+    sample_tracking = sample_tracking[sample_sheet_columns]
 
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
 
@@ -80,6 +96,23 @@ def process_flowcell(seq_dir):
         steps.run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
 
 
+def process_multiome():
+    """
+    Initiate pipeline for all multiome assay samples.
+    """
+    sample_tracking = master_tracking[master_tracking.run_pipeline &
+                                      (master_tracking.method == MULTIOME)]
+
+    threading.current_thread().name = 'Thread: MULTIOME'
+    logging.info("Started processing multiome samples")
+
+    sample_tracking['Sample'] = sample_tracking['sampleid']
+    sample_tracking = sample_tracking[sample_sheet_columns]
+
+    steps.upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version)
+    steps.run_cellranger_arc(directories, sample_tracking, alto_workspace)
+
+
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)-7s | %(threadName)-15s | %(levelname)-5s | %(message)s",
                         level=logging.INFO, datefmt="%m-%d %H:%M", filename=log_file, filemode='w')
@@ -94,4 +127,19 @@ if __name__ == "__main__":
     logging.info("Master sample tracking file: \n\n {} \n".format(master_tracking.to_markdown()))
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
-        executor.map(process_flowcell, seq_dirs)
+        method = set(master_tracking[master_tracking.run_pipeline]['method'])
+        if RNA in method:
+            seq_dirs = set(master_tracking[master_tracking.run_pipeline & (master_tracking.method == RNA)]['seq_dir'])
+            executor.map(process_rna_flowcell, seq_dirs)
+        if MULTIOME in method:
+            process_multiome()
+
+
+
+"""
+TODO
+
+[] multiome
+[] Catch and alert samplesheet errors
+[] submit cellranger count jobs all at once?
+"""

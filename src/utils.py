@@ -20,6 +20,7 @@ def build_directories(basedir):
         'fastqs': basedir + "/fastqs",
         'counts': basedir + "/counts",
         'results': basedir + "/cumulus",
+        'cellranger_arc': basedir + "/cellranger_arc",
         'cellbender': basedir + "/cellbenderV2",
         'cellbender_results': basedir + "/cellbenderV2_cumulus"
     }
@@ -34,6 +35,7 @@ def build_buckets(gcp_basedir, project):
         'fastqs': gcp_basedir + "/fastqs_" + project,
         'counts': gcp_basedir + "/counts_" + project,
         'results': gcp_basedir + "/cumulus_" + project,
+        'cellranger_arc': gcp_basedir + "/cellranger_arc_" + project,
         'cellbender': gcp_basedir + "/cellbenderv2_" + project,
         'cellbender_results': gcp_basedir + "/cellbenderv2_cumulus_" + project
     }
@@ -44,6 +46,7 @@ def build_alto_folders(buckets):
         'alto_fastqs': re.sub(r'^gs://.*/', "", buckets['fastqs']),
         'alto_counts': re.sub(r'^gs://.*/', "", buckets['counts']),
         'alto_results': re.sub(r'^gs://.*/', "", buckets['results']),
+        'alto_cellranger_arc': re.sub(r'^gs://.*/', "", buckets['cellranger_arc']),
         'alto_cellbender': re.sub(r'^gs://.*/', "", buckets['cellbender']),
         'alto_cellbender_results': re.sub(r'^gs://.*/', "", buckets['cellbender_results'])
     }

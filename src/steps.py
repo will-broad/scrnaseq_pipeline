@@ -310,3 +310,61 @@ def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto
 
     logging.info("STEP 10 | Initiate Terra cumulus pipeline via alto. ")
     execute_alto_command(run_alto_file)
+
+
+def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version):
+    arc_dir = directories['cellranger_arc']
+    arc_bucket = buckets['cellranger_arc']
+
+    samplesheet_arc_file = f"{arc_dir}/arc/samplesheet_arc.csv"
+    samplesheet_arc_gcp_file = f"{arc_bucket}/arc/samplesheet_arc.csv"
+
+    input_arc_file = f"{arc_dir}/arc/input_arc.json"
+    input_arc_gcp_file = f"{arc_bucket}/arc/input_arc.json"
+
+    if not os.path.isdir(f"{arc_dir}/arc"):
+        os.mkdir(f"{arc_dir}/arc")
+
+    with open(samplesheet_arc_file, "w") as f:
+        f.write("Sample,Reference,Flowcell,Lane,Index,DataType,Link\n")
+        for idx, sample in sample_tracking.iterrows():
+            sample_id = f"{sample['Sample']}_{sample['sub_method']}"
+            f.write(f"{sample_id},{sample['reference']},{sample['seq_dir']},{sample['Lane']},{sample['Index']},{sample['sub_method']},{sample['Sample']}")
+
+    include_introns = set(sample_tracking['introns'])
+    if len(include_introns) != 0:
+        logging.error("Unable to run samples with introns included and without in the same run. Exiting.")
+        exit(1)
+    include_introns = include_introns.pop()
+
+    with open('templates/cellranger_arc_input_template.json') as f:
+        template = f.read().replace('{input_file}', samplesheet_arc_gcp_file) \
+            .replace('{output_directory}', f"{arc_bucket}/output/") \
+            .replace('{include_introns}', f'"{include_introns}"') \
+            .replace('{cellranger_version}', f'{cellranger_version}')
+
+    with open(input_arc_file, "w") as f:
+        f.write(template)
+
+    logging.info("MULTIOME | Upload cellranger arc samplesheet and input file to Google Cloud Storage Bucket. ")
+    upload_arc_file = f"{arc_dir}/upload_arc.sh"
+    with open(upload_arc_file, "w") as f:
+        f.write(f"gsutil cp {samplesheet_arc_file} {samplesheet_arc_gcp_file}\n")
+        f.write(f"gsutil cp {input_arc_file} {input_arc_gcp_file}\n")
+
+    bash_execute_file(upload_arc_file)
+
+
+def run_cellranger_arc(buckets, directories, alto_workspace):
+    arc_dir = directories['cellranger_arc']
+    arc_bucket = buckets['cellranger_arc']
+
+    run_alto_file = f"{arc_dir}/run_alto_cellranger_arc.sh"
+    alto_method = "cumulus/cumulus/43"
+
+    with open(run_alto_file, "w") as f:
+        input_arc_file = f"{arc_dir}/arc/input_arc.json"
+        f.write(f"alto terra run -m {alto_method} -i {input_arc_file} -w {alto_workspace} --bucket-folder {arc_bucket} --no-cache\n")
+
+    logging.info("STEP 6 | Initiate Terra cumulus pipeline via alto. ")
+    execute_alto_command(run_alto_file)
