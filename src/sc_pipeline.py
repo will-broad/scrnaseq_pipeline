@@ -40,6 +40,7 @@ Preprocess Sample tracking file and Sanity check columns
 
 master_tracking = pd.read_csv(sample_tracking_file)
 master_tracking['seq_dir'] = master_tracking['seq_dir'].apply(lambda sd: sd[:-1] if sd.endswith('/') else sd)
+master_tracking['Sample'] = master_tracking['sampleid']
 project = master_tracking[master_tracking.run_pipeline]['project'].tolist()[0]
 buckets = build_buckets(gcp_basedir, project)
 alto_dirs = build_alto_folders(buckets)
@@ -69,7 +70,6 @@ def process_rna_flowcell(seq_dir):
     threading.current_thread().name = 'Thread:' + sample_tracking['flowcell'].iloc[0]
     logging.info("Started processing samples in {}".format(seq_dir))
 
-    sample_tracking['Sample'] = sample_tracking['sampleid']
     sample_tracking = sample_tracking[sample_sheet_columns]
 
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
@@ -106,7 +106,6 @@ def process_multiome():
     threading.current_thread().name = 'Thread: MULTIOME'
     logging.info("Started processing multiome samples")
 
-    sample_tracking['Sample'] = sample_tracking['sampleid']
     sample_tracking = sample_tracking[sample_sheet_columns]
 
     steps.upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version)

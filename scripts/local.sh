@@ -10,12 +10,12 @@
 
 # conda activate dsub_env
 
-dir_name="test_run"
-gcp_bucket_basedir="gs://fc-secure-b4e284d7-0ea0-43a6-8095-ee3256e94e97/${dir_name}"
-sample_tracking_file="${gcp_bucket_basedir}/sampletracking_small.csv"
-project_name="test_run"
+dir_name="multiome_automated_test_run"
+gcp_bucket_basedir="gs://fc-2cbea049-0464-48ee-9438-1fe5e008747d/${dir_name}"
+sample_tracking_file="${gcp_bucket_basedir}/sampletracking_multiome.csv"
+project_name="multiome_automated"
 email="dchafamo@broadinstitute.org"
-workspace="'kco-tech/tutorial'"
+workspace="'klarman-6/SHARE-seq_Multiome'"
 count_matrix_name="raw_feature_bc_matrix.h5"
 steps="MKFASTQ,COUNT,CUMULUS"
 
