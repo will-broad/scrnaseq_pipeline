@@ -37,13 +37,12 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
     bash_execute_file(upload_cellranger_file)
 
 
-def run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_fastqs_folder):
+def run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_method, alto_fastqs_folder):
     run_id = os.path.basename(sample_tracking['seq_dir'].iloc[0])
     alto_flowcell_bucket = "%s/%s" % (alto_fastqs_folder, run_id)
     fastq_flowcell_dir = directories['fastqs'] + "/%s" % run_id
 
     run_alto_file = "%s/run_alto_cellranger_workflow.sh" % fastq_flowcell_dir
-    alto_method = "cumulus/cellranger_workflow/28"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
@@ -106,12 +105,11 @@ def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tra
     bash_execute_file(uploadcellranger_file)
 
 
-def run_cellranger_count(directories, sample_dicts, sample_tracking, alto_workspace, alto_counts_folder):
+def run_cellranger_count(directories, sample_dicts, sample_tracking, alto_workspace, alto_method, alto_counts_folder):
     sample_dict = sample_dicts['sample']
     counts_dir = directories['counts']
 
     run_alto_file = "%s/run_alto_cellranger_workflow_%s.sh" % (counts_dir, sample_tracking['flowcell'].iloc[0])
-    alto_method = "cumulus/cellranger_workflow/28"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
@@ -170,12 +168,11 @@ def upload_cumulus_samplesheet(buckets, directories, sample_dicts, sample_tracki
     bash_execute_file(upload_cumulus_file)
 
 
-def run_cumulus(directories, sample_dicts, sample_tracking, alto_workspace, alto_results_folder):
+def run_cumulus(directories, sample_dicts, sample_tracking, alto_workspace, alto_method, alto_results_folder):
     sample_dict = sample_dicts['sample']
     results_dir = directories['results']
 
     run_alto_file = "%s/run_alto_cumulus_%s.sh" % (results_dir, sample_tracking['flowcell'].iloc[0])
-    alto_method = "cumulus/cumulus/43"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
@@ -225,12 +222,11 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking
     bash_execute_file(uploadcellbender_file)
 
 
-def run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_cellbender_folder):
+def run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_method, alto_cellbender_folder):
     sample_dict = sample_dicts['sample']
     cellbender_dir = directories['cellbender']
 
     run_alto_file = "%s/run_alto_cellbender_%s.sh" % (cellbender_dir, sample_tracking['flowcell'].iloc[0])
-    alto_method = "cellbender/remove-background/11"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
@@ -293,12 +289,11 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
     bash_execute_file(uploadcellbendercumulus_file)
 
 
-def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_results_folder):
+def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_method, alto_results_folder):
     sample_dict = sample_dicts['sample']
     cellbender_results_dir = directories['cellbender_results']
 
     run_alto_file = "%s/run_alto_cellbender_cumulus_%s.sh" % (cellbender_results_dir, sample_tracking['flowcell'].iloc[0])
-    alto_method = "cumulus/cumulus/43"
 
     open(run_alto_file, "w").close()
     bash_alto = open(run_alto_file, "a")
@@ -355,12 +350,11 @@ def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cel
     bash_execute_file(upload_arc_file)
 
 
-def run_cellranger_arc(buckets, directories, alto_workspace):
+def run_cellranger_arc(buckets, directories, alto_method, alto_workspace):
     arc_dir = directories['cellranger_arc']
     arc_bucket = buckets['cellranger_arc']
 
     run_alto_file = f"{arc_dir}/run_alto_cellranger_arc.sh"
-    alto_method = "cumulus/cellranger_workflow/28"
 
     with open(run_alto_file, "w") as f:
         input_arc_file = f"{arc_dir}/arc/input_arc.json"

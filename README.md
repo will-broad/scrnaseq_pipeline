@@ -31,10 +31,11 @@ The sample tracking file, in csv format, is a useful way to track the important 
 1. Create a Terra workspace https://support.terra.bio/hc/en-us/sections/360004538992-Workspaces
    - set authorization domain to klarman_cell_observatory
 2. Share workspace with scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com and klarman_cell_observatory@firecloud.org . Make them owners.
-3. Import cumulus/cellranger_workflow from Broad Methods Repository (https://support.terra.bio/hc/en-us/sections/360004147011-Workflows)
+3. Add scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com as a user in the billing project that owns the terra workspace
+4. Import cumulus/cellranger_workflow from Broad Methods Repository (https://support.terra.bio/hc/en-us/sections/360004147011-Workflows)
    - Source: cumulus/cellranger_workflow/28
-4. Create sample tracking csv file and upload it to the google cloud folder of your workspace
-5. Execute pipeline 
+5. Create sample tracking csv file and upload it to the google cloud folder of your workspace
+6. Execute pipeline 
 
 ## Executing Pipeline
 

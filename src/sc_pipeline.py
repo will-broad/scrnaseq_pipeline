@@ -20,6 +20,9 @@ count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_
 steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT,CUMULUS").split(',')
 mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=1500))
 mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="120G")
+cellbender_method = os.getenv("CELLBENDER_METHOD", default="cellbender/remove-background/11")
+cumulus_method = os.getenv("CUMULUS_METHOD", default="cumulus/cumulus/43")
+cellranger_method = os.getenv("CELLRANGER_METHOD", default="cumulus/cellranger_workflow/28")
 
 """
 Set global variables
@@ -76,25 +79,99 @@ def process_rna_flowcell(seq_dir):
     sample_dicts = build_sample_dicts(sample_tracking, sample_tracking['sampleid'].tolist())
 
     if "MKFASTQ" in steps_to_run:
-        steps.upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version,
-                                              mkfastq_disk_space, mkfastq_memory)
-        steps.run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_dirs['alto_fastqs'])
+
+        steps.upload_cellranger_mkfastq_input(
+            buckets,
+            directories,
+            sample_tracking,
+            cellranger_version,
+            mkfastq_disk_space,
+            mkfastq_memory
+        )
+
+        steps.run_cellranger_mkfastq(
+            directories,
+            sample_tracking,
+            alto_workspace,
+            cellranger_method,
+            alto_dirs['alto_fastqs']
+        )
 
     if "COUNT" in steps_to_run:
-        steps.upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tracking, cellranger_version)
-        steps.run_cellranger_count(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_counts'])
+
+        steps.upload_cellranger_count_input(
+            buckets,
+            directories,
+            sample_dicts,
+            sample_tracking,
+            cellranger_version
+        )
+
+        steps.run_cellranger_count(
+            directories,
+            sample_dicts,
+            sample_tracking,
+            alto_workspace,
+            cellranger_method,
+            alto_dirs['alto_counts']
+        )
 
     if "CUMULUS" in steps_to_run:
-        steps.upload_cumulus_samplesheet(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
-        steps.run_cumulus(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
+
+        steps.upload_cumulus_samplesheet(
+            buckets,
+            directories,
+            sample_dicts,
+            sample_tracking,
+            count_matrix_name
+        )
+
+        steps.run_cumulus(
+            directories,
+            sample_dicts,
+            sample_tracking,
+            alto_workspace,
+            cumulus_method,
+            alto_dirs['alto_results']
+        )
 
     if "CELLBENDER" in steps_to_run:
-        steps.upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking, count_matrix_name)
-        steps.run_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_cellbender'])
+
+        steps.upload_cell_bender_input(
+            buckets,
+            directories,
+            sample_dicts,
+            sample_tracking,
+            count_matrix_name
+        )
+
+        steps.run_cellbender(
+            directories,
+            sample_dicts,
+            sample_tracking,
+            alto_workspace,
+            cellbender_method,
+            alto_dirs['alto_cellbender']
+        )
 
     if "CELLBENDER_CUMULUS" in steps_to_run:
-        steps.upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sample_tracking, cellbender_matrix_name)
-        steps.run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto_workspace, alto_dirs['alto_results'])
+
+        steps.upload_post_cellbender_cumulus_input(
+            buckets,
+            directories,
+            sample_dicts,
+            sample_tracking,
+            cellbender_matrix_name
+        )
+
+        steps.run_cumulus_post_cellbender(
+            directories,
+            sample_dicts,
+            sample_tracking,
+            alto_workspace,
+            cumulus_method,
+            alto_dirs['alto_results']
+        )
 
 
 def process_multiome():
@@ -110,7 +187,7 @@ def process_multiome():
     sample_tracking = sample_tracking[sample_sheet_columns]
 
     steps.upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version)
-    steps.run_cellranger_arc(buckets, directories, alto_workspace)
+    steps.run_cellranger_arc(buckets, directories, cellranger_method, alto_workspace)
 
 
 if __name__ == "__main__":
@@ -142,7 +219,8 @@ if __name__ == "__main__":
 """
 TODO
 
-[] multiome
-[] Catch and alert samplesheet errors
+[x] multiome
+[x] Catch and alert samplesheet errors
 [] submit cellranger count jobs all at once?
+[] Terra tables
 """
