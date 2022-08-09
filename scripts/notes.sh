@@ -136,3 +136,11 @@ gsutil -m rsync -r -x '^(?!.*\.tsv.gz$).*' gs://fc-secure-1620151c-e00c-456d-9da
 gsutil -m rsync -r -x '^(?!.*\iltered_feature_bc_matrix.h5$).*' gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0325/counts_gut_eqtl /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/counts/
 gsutil -m rsync -r -x '^(?!.*\GRCh38-rna.h5ad$).*' gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL_0325/cumulus_gut_eqtl /broad/xavierlab_datadeposit/projects/gut_eqtl/gut_eqtl_0325/cumulus/
 
+
+export PROJECT_NAME="$project_name"
+export GCP_BUCKET_BASEDIR="$gcp_bucket_basedir"
+export EMAIL="$email"
+export TERRA_WORKSPACE="$workspace"
+export COUNT_MATRIX_NAME="$count_matrix_name"
+export STEPS="$steps"
+export CELLRANGER_METHOD="$cellranger_method"

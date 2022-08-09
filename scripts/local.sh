@@ -10,14 +10,15 @@
 
 # conda activate dsub_env
 
-dir_name="multiome_automated_test_run"
-gcp_bucket_basedir="gs://fc-2cbea049-0464-48ee-9438-1fe5e008747d/${dir_name}"
+dir_name="finngen_multiome"
+gcp_bucket_basedir="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/${dir_name}"
 sample_tracking_file="${gcp_bucket_basedir}/sampletracking_multiome.csv"
-project_name="multiome_automated"
+project_name="finngen_multiome"
 email="dchafamo@broadinstitute.org"
-workspace="'klarman-6/SHARE-seq_Multiome'"
+workspace="'693-finland-v2f/Finngen'"
 count_matrix_name="raw_feature_bc_matrix.h5"
 steps="MKFASTQ,COUNT,CUMULUS"
+cellranger_method="broadinstitute:cumulus:Cellranger:master"
 
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
@@ -31,4 +32,5 @@ dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --env EMAIL="$email" \
   --env TERRA_WORKSPACE="$workspace" \
   --env COUNT_MATRIX_NAME="$count_matrix_name" \
-  --env STEPS="$steps"
+  --env STEPS="$steps" \
+  --env CELLRANGER_METHOD="$cellranger_method"
