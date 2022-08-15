@@ -144,3 +144,15 @@ export TERRA_WORKSPACE="$workspace"
 export COUNT_MATRIX_NAME="$count_matrix_name"
 export STEPS="$steps"
 export CELLRANGER_METHOD="$cellranger_method"
+export CUMULUS_METHOD="$cumulus_method"
+
+'''
+dir_name="chl_rnaseq"
+gcp_basedir=f"gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/{dir_name}"
+sample_tracking_file="/Users/dchafamo/local/projects/finngen/samplesheets/vignesh/sampletracking_chl.csv"
+project_name="chl_rnaseq"
+email="dchafamo@broadinstitute.org"
+alto_workspace="'kco-tech/Gut_eQTL'"
+count_matrix_name="raw_feature_bc_matrix.h5"
+steps_to_run=["CELLBENDER_CUMULUS"]
+'''

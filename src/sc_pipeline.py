@@ -21,7 +21,7 @@ steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT,CUMULUS").split(',')
 mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=1500))
 mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="120G")
 cellbender_method = os.getenv("CELLBENDER_METHOD", default="cellbender/remove-background/11")
-cumulus_method = os.getenv("CUMULUS_METHOD", default="cumulus/cumulus/43")
+cumulus_method = os.getenv("CUMULUS_METHOD", default="broadinstitute:cumulus:cumulus:master")
 cellranger_method = os.getenv("CELLRANGER_METHOD", default="cumulus/cellranger_workflow/28")
 
 """
@@ -214,13 +214,3 @@ if __name__ == "__main__":
         logging.info('Processing Multiome Samples.')
         process_multiome()
 
-
-
-"""
-TODO
-
-[x] multiome
-[x] Catch and alert samplesheet errors
-[] submit cellranger count jobs all at once?
-[] Terra tables
-"""
