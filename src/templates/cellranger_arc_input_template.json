@@ -7,6 +7,8 @@
   "cellranger_workflow.include_introns": "{include_introns}",
   "cellranger_workflow.cellranger_arc_version": "2.0.1",
   "cellranger_workflow.run_count": true,
-  "cellranger_workflow.run_mkfastq": true
+  "cellranger_workflow.run_mkfastq": true,
+  "cellranger_workflow.mkfastq_disk_space" : "{mkfastq_disk_space}",
+  "cellranger_workflow.memory": "{memory}"
 }
 

@@ -307,7 +307,7 @@ def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto
     execute_alto_command(run_alto_file)
 
 
-def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version):
+def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version, mkfastq_disk_space, mkfastq_memory):
     arc_dir = directories['cellranger_arc']
     arc_bucket = buckets['cellranger_arc']
 
@@ -336,7 +336,9 @@ def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cel
         template = f.read().replace('{input_csv}', samplesheet_arc_gcp_file) \
             .replace('{output_dir}', f"{arc_bucket}/output/") \
             .replace('"{include_introns}"', f'{str(include_introns).lower()}') \
-            .replace('{cellranger_version}', f'{cellranger_version}')
+            .replace('{cellranger_version}', f'{cellranger_version}') \
+            .replace('"{mkfastq_disk_space}"', f'{mkfastq_disk_space}') \
+            .replace('{memory}', f'{mkfastq_memory}')
 
     with open(input_arc_file, "w") as f:
         f.write(template)
