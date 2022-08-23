@@ -19,6 +19,8 @@ workspace="'693-finland-v2f/Finngen'"
 count_matrix_name="raw_feature_bc_matrix.h5"
 steps="MKFASTQ,COUNT,CUMULUS"
 cellranger_method="broadinstitute:cumulus:Cellranger:master"
+mkfastq_memory="120G"
+mkfastq_diskspace="1500"
 
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
@@ -33,4 +35,6 @@ dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --env TERRA_WORKSPACE="$workspace" \
   --env COUNT_MATRIX_NAME="$count_matrix_name" \
   --env STEPS="$steps" \
-  --env CELLRANGER_METHOD="$cellranger_method"
+  --env CELLRANGER_METHOD="$cellranger_method" \
+  --env MKFASTQ_DISKSPACE="$mkfastq_diskspace" \
+  --env MKFASTQ_MEMORY="$mkfastq_memory"
