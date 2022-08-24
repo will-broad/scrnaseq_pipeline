@@ -307,7 +307,8 @@ def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto
     execute_alto_command(run_alto_file)
 
 
-def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version, mkfastq_disk_space, mkfastq_memory):
+def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version,
+                                      mkfastq_disk_space, mkfastq_memory, steps_to_run):
     arc_dir = directories['cellranger_arc']
     arc_bucket = buckets['cellranger_arc']
 
@@ -331,6 +332,8 @@ def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cel
         logging.error("Unable to run samples with introns included and without in the same run. Exiting.")
         exit(1)
     include_introns = include_introns.pop()
+    run_mkfastq = "MKFASTQ" in steps_to_run
+    run_count = "COUNT" in steps_to_run
 
     with open('templates/cellranger_arc_input_template.json') as f:
         template = f.read().replace('{input_csv}', samplesheet_arc_gcp_file) \
@@ -338,7 +341,9 @@ def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cel
             .replace('"{include_introns}"', f'{str(include_introns).lower()}') \
             .replace('{cellranger_version}', f'{cellranger_version}') \
             .replace('"{mkfastq_disk_space}"', f'{mkfastq_disk_space}') \
-            .replace('{memory}', f'{mkfastq_memory}')
+            .replace('{memory}', f'{mkfastq_memory}') \
+            .replace('"{run_mkfastq}"', f'{str(run_mkfastq).lower()}') \
+            .replace('"{run_count}"', f'{str(run_count).lower()}')
 
     with open(input_arc_file, "w") as f:
         f.write(template)

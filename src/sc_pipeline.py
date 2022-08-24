@@ -186,7 +186,8 @@ def process_multiome():
 
     sample_tracking = sample_tracking[sample_sheet_columns]
 
-    steps.upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version, mkfastq_disk_space, mkfastq_memory)
+    steps.upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version,
+                                            mkfastq_disk_space, mkfastq_memory, steps_to_run)
     steps.run_cellranger_arc(buckets, directories, cellranger_method, alto_workspace)
 
 
