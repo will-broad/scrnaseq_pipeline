@@ -10,15 +10,15 @@
 
 # conda activate dsub_env
 
-dir_name="finngen_multiome"
+dir_name="test"
 gcp_bucket_basedir="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/${dir_name}"
 sample_tracking_file="${gcp_bucket_basedir}/sampletracking_multiome.csv"
-project_name="finngen_multiome"
+project_name="test"
 email="dchafamo@broadinstitute.org"
 workspace="'693-finland-v2f/Finngen'"
 count_matrix_name="raw_feature_bc_matrix.h5"
-steps="MKFASTQ,COUNT,CUMULUS"
-cellranger_method="broadinstitute:cumulus:Cellranger:master"
+steps="MKFASTQ,COUNT"
+cellranger_method="cumulus/cellranger_workflow/28"
 mkfastq_memory="120G"
 mkfastq_diskspace="1500"
 

@@ -10,9 +10,9 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
     os.makedirs(fastq_flowcell_dir, exist_ok=True)
 
     samplesheet_file = '%s/samplesheet_cellranger_mkfastq.csv' % fastq_flowcell_dir
-    samplesheet = sample_tracking[['Lane', 'Sample', 'Index', 'reference', 'chemistry', 'seq_dir']]
+    samplesheet = sample_tracking[['Lane', 'Sample', 'Index', 'reference', 'chemistry', 'seq_dir', 'method']]
     samplesheet.to_csv(samplesheet_file, index=False,
-                       header=['Lane', 'Sample', 'Index', 'Reference', 'Chemistry', 'Flowcell'])
+                       header=['Lane', 'Sample', 'Index', 'Reference', 'Chemistry', 'Flowcell', 'DataType'])
 
     input_cellranger_file = "%s/input_cellranger_mkfastq.json" % fastq_flowcell_dir
 
@@ -72,12 +72,12 @@ def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tra
         samplesheet_cellranger_file = "%s/%s/samplesheet_cellranger.csv" % (counts_dir, sample_id)
 
         with open(samplesheet_cellranger_file, "w") as f:
-            f.write("Sample,Reference,Flowcell,Lane,Index,Chemistry\n")
+            f.write("Sample,Reference,Flowcell,Lane,Index,Chemistry,DataType\n")
             for sample in sample_dict[sample_id]:
                 fastq_sample_bucket = "%s/fastq_path/%s/" % (fastq_flowcell_bucket, flowcell)
-                f.write("%s,%s,%s,%s,%s,%s\n" % (sample, mkfastq_dict[sample][2], fastq_sample_bucket,
+                f.write("%s,%s,%s,%s,%s,%s,%s\n" % (sample, mkfastq_dict[sample][2], fastq_sample_bucket,
                                                  mkfastq_dict[sample][0], mkfastq_dict[sample][1],
-                                                 mkfastq_dict[sample][3]))
+                                                 mkfastq_dict[sample][3],mkfastq_dict[sample][4]))
 
     for sample_id in sample_dict.keys():
         input_cellranger_file = "%s/%s/input_cellranger.json" % (counts_dir, sample_id)
