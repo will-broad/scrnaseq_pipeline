@@ -206,8 +206,8 @@ if __name__ == "__main__":
 
     method = set(master_tracking[master_tracking.run_pipeline]['method'])
     logging.info(f'Methods = {method}')
-    if RNA in method:
-        logging.info('Processing RNA Seq Samples.')
+    if RNA in method or ATAC in method:
+        logging.info('Processing RNA Seq and ATAC Seq Samples.')
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
             seq_dirs = set(master_tracking[master_tracking.run_pipeline & (master_tracking.method == RNA)]['seq_dir'])
             executor.map(process_rna_flowcell, seq_dirs)
