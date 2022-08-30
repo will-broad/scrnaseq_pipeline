@@ -11,30 +11,18 @@ import os
 """
 Config Section - Modify this section only
 """
-dir_name="test"
-gcp_basedir = f"gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/{dir_name}"
-sample_tracking_file=f"{gcp_basedir}/sampletracking_multiome.csv"
-project_name="test"
-email="dchafamo@broadinstitute.org"
-alto_workspace="'693-finland-v2f/Finngen'"
-count_matrix_name="raw_feature_bc_matrix.h5"
-steps_to_run="MKFASTQ,COUNT"
-cellranger_method="cumulus/cellranger_workflow/28"
-mkfastq_memory="120G"
-mkfastq_diskspace="1500"
-
-# project_name = os.getenv("PROJECT_NAME", default="Gut_eQTL")
-# sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/sampletracking_multiome.csv")
-# gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
-# email = os.getenv("EMAIL", default="dchafamo@broadinstitute.org")
-# alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
-# count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
-# steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT,CUMULUS").split(',')
+project_name = os.getenv("PROJECT_NAME", default="Gut_eQTL")
+sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/sampletracking_multiome.csv")
+gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
+email = os.getenv("EMAIL", default="dchafamo@broadinstitute.org")
+alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
+count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
+steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT,CUMULUS").split(',')
 mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=1500))
-# mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="120G")
+mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="120G")
 cellbender_method = os.getenv("CELLBENDER_METHOD", default="cellbender/remove-background/11")
 cumulus_method = os.getenv("CUMULUS_METHOD", default="broadinstitute:cumulus:cumulus:master")
-# cellranger_method = os.getenv("CELLRANGER_METHOD", default="cumulus/cellranger_workflow/28")
+cellranger_method = os.getenv("CELLRANGER_METHOD", default="cumulus/cellranger_workflow/28")
 
 """
 Set global variables
