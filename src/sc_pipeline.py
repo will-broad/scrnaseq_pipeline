@@ -22,12 +22,13 @@ mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=1500))
 mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="120G")
 cellbender_method = os.getenv("CELLBENDER_METHOD", default="cellbender/remove-background/11")
 cumulus_method = os.getenv("CUMULUS_METHOD", default="broadinstitute:cumulus:cumulus:master")
-cellranger_method = os.getenv("CELLRANGER_METHOD", default="cumulus/cellranger_workflow/28")
+cellranger_method = os.getenv("CELLRANGER_METHOD", default="broadinstitute:cumulus:cumulus:master")
+cellranger_version = os.getenv("CELLRANGER_VERSION", default="7.0.1")
+cellranger_atac_version = os.getenv("CELLRANGER_ATAC_VERSION", default="2.1.0")
 
 """
 Set global variables
 """
-cellranger_version = "6.0.1"
 max_parallel_threads = 50
 cellbender_matrix_name = "out_FPR_0.01_filtered.h5"
 cwd = os.getcwd()

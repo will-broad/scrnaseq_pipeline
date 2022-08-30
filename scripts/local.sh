@@ -18,7 +18,6 @@ email="dchafamo@broadinstitute.org"
 workspace="'693-finland-v2f/Finngen'"
 count_matrix_name="raw_feature_bc_matrix.h5"
 steps="MKFASTQ,COUNT"
-cellranger_method="cumulus/cellranger_workflow/28"
 mkfastq_memory="120G"
 mkfastq_diskspace="1500"
 
