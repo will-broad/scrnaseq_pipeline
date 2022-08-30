@@ -25,7 +25,7 @@ cumulus_method = os.getenv("CUMULUS_METHOD", default="broadinstitute:cumulus:cum
 cellranger_method = os.getenv("CELLRANGER_METHOD", default="broadinstitute:cumulus:cumulus:master")
 cellranger_version = os.getenv("CELLRANGER_VERSION", default="7.0.1")
 cellranger_atac_version = os.getenv("CELLRANGER_ATAC_VERSION", default="2.1.0")
-
+cellranger_arc_version = os.getenv("CELLRANGER_ARC_VERSION", default="2.0.1")
 """
 Set global variables
 """
@@ -86,6 +86,7 @@ def process_rna_flowcell(seq_dir):
             directories,
             sample_tracking,
             cellranger_version,
+            cellranger_atac_version,
             mkfastq_disk_space,
             mkfastq_memory
         )
@@ -105,7 +106,8 @@ def process_rna_flowcell(seq_dir):
             directories,
             sample_dicts,
             sample_tracking,
-            cellranger_version
+            cellranger_version,
+            cellranger_atac_version
         )
 
         steps.run_cellranger_count(
@@ -187,7 +189,7 @@ def process_multiome():
 
     sample_tracking = sample_tracking[sample_sheet_columns]
 
-    steps.upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version,
+    steps.upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_arc_version,
                                             mkfastq_disk_space, mkfastq_memory, steps_to_run)
     steps.run_cellranger_arc(buckets, directories, cellranger_method, alto_workspace)
 

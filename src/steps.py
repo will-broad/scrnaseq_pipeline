@@ -3,7 +3,7 @@ import os
 from utils import execute_alto_command, bash_execute_file
 
 
-def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version, diskspace, memory):
+def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellranger_version, cellranger_atac_version, diskspace, memory):
     run_id = os.path.basename(sample_tracking['seq_dir'].tolist()[0])
     fastq_flowcell_bucket = "%s/%s_fastqs" % (buckets['fastqs'], run_id)
     fastq_flowcell_dir = "%s/%s" % (directories['fastqs'], run_id)
@@ -22,6 +22,7 @@ def upload_cellranger_mkfastq_input(buckets, directories, sample_tracking, cellr
                 fastq_flowcell_bucket)
         f.write("\t\"cellranger_workflow.output_directory\" : \"%s\",\n" % buckets['fastqs'])
         f.write("\t\"cellranger_workflow.cellranger_version\" : \"%s\",\n" % cellranger_version)
+        f.write("\t\"cellranger_workflow.cellranger_atac_version\" : \"%s\",\n" % cellranger_atac_version)
         f.write("\t\"cellranger_workflow.run_mkfastq\" : true,\n")
         f.write("\t\"cellranger_workflow.run_count\" : false,\n")
         f.write("\t\"cellranger_workflow.mkfastq_disk_space\" : %s,\n" % diskspace)
@@ -55,7 +56,7 @@ def run_cellranger_mkfastq(directories, sample_tracking, alto_workspace, alto_me
     execute_alto_command(run_alto_file)
 
 
-def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tracking, cellranger_version):
+def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tracking, cellranger_version, cellranger_atac_version):
     fastqs_bucket = buckets['fastqs']
     counts_bucket = buckets['counts']
     counts_dir = directories['counts']
@@ -88,6 +89,7 @@ def upload_cellranger_count_input(buckets, directories, sample_dicts, sample_tra
                 counts_bucket, sample_id))
             f.write("\t\"cellranger_workflow.output_directory\" : \"%s\",\n" % counts_bucket)
             f.write("\t\"cellranger_workflow.cellranger_version\" : \"%s\",\n" % cellranger_version)
+            f.write("\t\"cellranger_workflow.cellranger_atac_version\" : \"%s\",\n" % cellranger_atac_version)
             f.write("\t\"cellranger_workflow.run_mkfastq\" : false,\n")
             f.write("\t\"cellranger_workflow.run_count\" : true,\n")
             f.write("\t\"cellranger_workflow.mkfastq_docker_registry\" : \"gcr.io/microbiome-xavier\",\n")
@@ -307,7 +309,7 @@ def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto
     execute_alto_command(run_alto_file)
 
 
-def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_version,
+def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cellranger_arc_version,
                                       mkfastq_disk_space, mkfastq_memory, steps_to_run):
     arc_dir = directories['cellranger_arc']
     arc_bucket = buckets['cellranger_arc']
@@ -339,7 +341,7 @@ def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cel
         template = f.read().replace('{input_csv}', samplesheet_arc_gcp_file) \
             .replace('{output_dir}', f"{arc_bucket}/output/") \
             .replace('"{include_introns}"', f'{str(include_introns).lower()}') \
-            .replace('{cellranger_version}', f'{cellranger_version}') \
+            .replace('{cellranger_arc_version}', f'{cellranger_arc_version}') \
             .replace('"{mkfastq_disk_space}"', f'{mkfastq_disk_space}') \
             .replace('{memory}', f'{mkfastq_memory}') \
             .replace('"{run_mkfastq}"', f'{str(run_mkfastq).lower()}') \
