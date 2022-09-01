@@ -20,6 +20,7 @@ count_matrix_name="raw_feature_bc_matrix.h5"
 steps="MKFASTQ,COUNT"
 mkfastq_memory="120G"
 mkfastq_diskspace="1500"
+cellranger_method="broadinstitute:cumulus:Cellranger:2.1.1"
 
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
