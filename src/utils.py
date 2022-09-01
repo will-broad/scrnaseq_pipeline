@@ -119,6 +119,8 @@ def wait_for_terra_submission(status_url):
 def bash_execute_file(file):
     command = "bash %s" % file
     logging.info("Executing command: `{}`".format(command))
+    with open(file, 'r') as f:
+        logging.info(f"Bash file:\n {f.read()}")
     subprocess.run(command, shell=True, stdout=sys.stdout, stderr=sys.stderr, check=True)
 
 
