@@ -78,6 +78,8 @@ def execute_alto_command(run_alto_file):
     with alto_lock:
         command = "bash %s" % run_alto_file
         logging.info("Executing command: `{}`".format(command))
+        with open(run_alto_file, 'r') as f:
+            logging.info(f"Alto file:\n {f.read()}")
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
         alto_outputs = [status_url for status_url in result.stdout.decode('utf-8').split("\n") if "http" in status_url]
 
