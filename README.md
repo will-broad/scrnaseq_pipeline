@@ -52,4 +52,9 @@ bash scripts/run.sh --project-name "scp-test" \
  
 ```
 
+## Notes
+
+When specifying terra workflow methods, "[t]he workflow can come from either Dockstore or Broad Methods Repository. If it comes from Dockstore, specify the name as organization:collection:name:version (e.g. broadinstitute:cumulus:cumulus:1.5.0) and the default version would be used if version is omitted. If it comes from Broad Methods Repository, specify the name as namespace/name/version (e.g. cumulus/cumulus/43) and the latest snapshot would be used if version is omitted." Refer to https://cumulus.readthedocs.io/en/stable/command_line.html for more information. 
+
+
 
