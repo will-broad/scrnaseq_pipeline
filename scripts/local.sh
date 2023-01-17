@@ -27,13 +27,14 @@ cellranger_version="7.0.1"
 cellranger_atac_version="2.1.0"
 cellranger_arc_version="2.0.1"
 
+current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
   --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --timeout '2d'\
   --logging "$gcp_bucket_basedir/logs/" \
-  --command "wget http://github.com/dan-broad/scrnaseq_pipeline/archive/master.zip && unzip master.zip && cd scrnaseq_pipeline-master/src && python sc_pipeline.py" \
-  --output PIPELINE_LOGS="$gcp_bucket_basedir/logs/execution.log" \
+  --command "wget https://github.com/dan-broad/scrnaseq_pipeline/archive/master.zip && unzip master.zip && cd scrnaseq_pipeline-master/src && python sc_pipeline.py" \
+  --output PIPELINE_LOGS="$gcp_bucket_basedir/logs/execution_$current_time.log" \
   --input SAMPLE_TRACKING_FILE="$sample_tracking_file" \
   --env PROJECT_NAME="$project_name" \
   --env GCP_BUCKET_BASEDIR="$gcp_bucket_basedir" \
