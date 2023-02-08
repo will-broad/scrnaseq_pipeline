@@ -82,8 +82,6 @@ def execute_alto_command(run_alto_file):
             logging.info(f"Alto file:\n {f.read()}")
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
         alto_outputs = [status_url for status_url in result.stdout.decode('utf-8').split("\n") if "http" in status_url]
-        logging.info("Alto submission len {}",format(len(alto_outputs)))
-        logging.info("Alto submission 1 {}",format(alto_outputs[0]))
 
     if len(alto_outputs) == 0:
         logging.info("Alto submission status url not found. %s" % result)
