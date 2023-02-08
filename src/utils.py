@@ -82,13 +82,14 @@ def execute_alto_command(run_alto_file):
             logging.info(f"Alto file:\n {f.read()}")
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True)
         alto_outputs = [status_url for status_url in result.stdout.decode('utf-8').split("\n") if "http" in status_url]
-
+    
+    logging.info("It made it to here {}".format(len(alto_outputs)))
     if len(alto_outputs) == 0:
         logging.info("Alto submission status url not found. %s" % result)
         sys.exit()
-
-    #for status_url in alto_outputs:
-    #    wait_for_terra_submission(status_url)
+    logging.info("It made it to here one more {}".format(len(alto_outputs)))
+    for status_url in alto_outputs:
+        wait_for_terra_submission(status_url)
 
 
 def wait_for_terra_submission(status_url):
