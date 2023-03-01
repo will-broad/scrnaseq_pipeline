@@ -23,7 +23,7 @@ mkfastq_diskspace="2500"
 cellranger_method="broadinstitute:cumulus:Cellranger:2.1.1"
 cumulus_method="broadinstitute:cumulus:cumulus:2.1.1"
 cellbender_method="broadinstitute:cumulus:CellBender:2.3.0"
-cellranger_version="7.0.1"
+cellranger_version="6.0.1"
 cellranger_atac_version="2.1.0"
 cellranger_arc_version="2.0.1"
 

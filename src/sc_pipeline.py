@@ -23,7 +23,7 @@ mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="120G")
 cellbender_method = os.getenv("CELLBENDER_METHOD", default="cellbender/remove-background/11")
 cumulus_method = os.getenv("CUMULUS_METHOD", default="broadinstitute:cumulus:cumulus:2.1.1")
 cellranger_method = os.getenv("CELLRANGER_METHOD", default="broadinstitute:cumulus:Cellranger:2.1.1")
-cellranger_version = os.getenv("CELLRANGER_VERSION", default="7.0.1")
+cellranger_version = os.getenv("CELLRANGER_VERSION", default="6.0.1")
 cellranger_atac_version = os.getenv("CELLRANGER_ATAC_VERSION", default="2.1.0")
 cellranger_arc_version = os.getenv("CELLRANGER_ARC_VERSION", default="2.0.1")
 """
