@@ -16,7 +16,7 @@ gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-d4adbbf9-8
 email = os.getenv("EMAIL", default="will@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'693-finland-v2f/Finngen'")
 count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
-steps_to_run = os.getenv("STEPS", default="CELLBENDER_CUMULUS").split(',')
+steps_to_run = os.getenv("STEPS", default="CELLBENDER").split(',')
 mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=2500))
 mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="256")
 cellbender_method = os.getenv("CELLBENDER_METHOD", default="cellbender/remove-background/11")
