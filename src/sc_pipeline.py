@@ -12,18 +12,18 @@ import os
 Config Section - Modify this section only
 """
 project_name = os.getenv("PROJECT_NAME", default="Gut_eQTL")
-sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/030323_batch2_multiome_sampletracker.csv")
+sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/test_batch1_multiome_sampletracker.csv")
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
 email = os.getenv("EMAIL", default="will@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
 count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
-steps_to_run = os.getenv("STEPS", default="COUNT").split(',')
+steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT").split(',')
 mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=1500))
 mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="120G")
 cellbender_method = os.getenv("CELLBENDER_METHOD", default="cellbender/remove-background/11")
 cumulus_method = os.getenv("CUMULUS_METHOD", default="broadinstitute:cumulus:cumulus:2.1.1")
 cellranger_method = os.getenv("CELLRANGER_METHOD", default="broadinstitute:cumulus:Cellranger:master")
-cellranger_version = os.getenv("CELLRANGER_VERSION", default="7.0.1")
+cellranger_version = os.getenv("CELLRANGER_VERSION", default="6.0.1")
 cellranger_atac_version = os.getenv("CELLRANGER_ATAC_VERSION", default="2.1.0")
 cellranger_arc_version = os.getenv("CELLRANGER_ARC_VERSION", default="2.0.1")
 """
