@@ -12,7 +12,7 @@ import os
 Config Section - Modify this section only
 """
 project_name = os.getenv("PROJECT_NAME", default="Gut_eQTL")
-sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/032723_batches_multiome_sampletracker.csv")
+sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/041423_batches_multiome_sampletracker.csv")
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
 email = os.getenv("EMAIL", default="will@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
