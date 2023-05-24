@@ -12,7 +12,7 @@
 
 dir_name="finngen_multiome"
 gcp_bucket_basedir="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/${dir_name}"
-sample_tracking_file="${gcp_bucket_basedir}/041423_batches_multiome_sampletracker.csv"
+sample_tracking_file="${gcp_bucket_basedir}/052423_overload_multiome_sampletracker.csv"
 project_name="finngen_multiome"
 email="will@broadinstitute.org"
 workspace="'693-finland-v2f/Finngen'"
