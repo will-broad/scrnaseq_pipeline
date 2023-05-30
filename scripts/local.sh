@@ -25,7 +25,7 @@ cumulus_method="broadinstitute:cumulus:cumulus:2.1.1"
 cellbender_method="cellbender/remove-background/11"
 cellranger_version="7.0.1"
 cellranger_atac_version="2.1.0"
-cellranger_arc_version="2.0.1"
+cellranger_arc_version="2.0.2"
 
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 
