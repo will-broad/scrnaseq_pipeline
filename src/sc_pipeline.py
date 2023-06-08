@@ -11,12 +11,12 @@ import os
 Config Section - Modify this section only
 """
 project_name = os.getenv("PROJECT_NAME", default="finngen_gex")
-sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/060123_batch3_depressed_gex_sampletracker.csv")
+sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/060823_batch3_gex_count_sampletracker.csv")
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/finngen_gex")
 email = os.getenv("EMAIL", default="will@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'693-finland-v2f/Finngen'")
 count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
-steps_to_run = os.getenv("STEPS", default="MKFASTQ,COUNT").split(',')
+steps_to_run = os.getenv("STEPS", default="CELLBENDER,CELLBENDER_CUMULUS").split(',')
 mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=2500))
 mkfastq_memory = os.getenv("MKFASTQ_MEMORY", default="256")
 cellbender_method = os.getenv("CELLBENDER_METHOD", default="cellbender/remove-background/11")
