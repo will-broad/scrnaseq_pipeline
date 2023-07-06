@@ -11,11 +11,11 @@ import os
 """
 Config Section - Modify this section only
 """
-project_name = os.getenv("PROJECT_NAME", default="Gut_eQTL")
+project_name = os.getenv("PROJECT_NAME", default="finngen_multiome")
 sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/070523_batch3_multiome_sampletracker.csv")
-gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-1620151c-e00c-456d-9daf-4d222e1cab18/Gut_eQTL")
+gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/finngen_multiome")
 email = os.getenv("EMAIL", default="will@broadinstitute.org")
-alto_workspace = os.getenv("TERRA_WORKSPACE", default="'kco-tech/Gut_eQTL'")
+alto_workspace = os.getenv("TERRA_WORKSPACE", default="'693-finland-v2f/Finngen'")
 count_matrix_name = os.getenv("COUNT_MATRIX_NAME", default="filtered_feature_bc_matrix.h5")
 steps_to_run = os.getenv("STEPS", default="COUNT").split(',')
 mkfastq_disk_space = int(os.getenv("MKFASTQ_DISKSPACE", default=3000))
