@@ -8,8 +8,6 @@
   "cellranger_workflow.run_count": "{run_count}",
   "cellranger_workflow.run_mkfastq": "{run_mkfastq}",
   "cellranger_workflow.mkfastq_disk_space" : "{mkfastq_disk_space}",
-  "cellranger_workflow.memory": "{memory}",
-  "cellranger_workflow.arc_min_gex_count": 200,
-  "cellranger_workflow.arc_min_atac_count": 1000
+  "cellranger_workflow.memory": "{memory}"
 }
 
