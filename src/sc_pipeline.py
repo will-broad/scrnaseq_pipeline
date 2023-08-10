@@ -165,7 +165,7 @@ def process_rna_flowcell(seq_dir):
             sample_tracking,
             cellbender_matrix_name
         )
-
+        
         steps.run_cumulus_post_cellbender(
             directories,
             sample_dicts,

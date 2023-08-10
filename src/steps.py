@@ -296,15 +296,12 @@ def run_cumulus_post_cellbender(directories, sample_dicts, sample_tracking, alto
     cellbender_results_dir = directories['cellbender_results']
 
     run_alto_file = "%s/run_alto_cellbender_cumulus_%s.sh" % (cellbender_results_dir, sample_tracking['flowcell'].iloc[0])
-
-    open(run_alto_file, "w").close()
-    bash_alto = open(run_alto_file, "a")
-    for sampleid in sample_dict.keys():
-        input_cellbender_cumulus_file = "%s/%s/input_cumulus.json" % (cellbender_results_dir, sampleid)
-        bash_alto.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
-            alto_method, input_cellbender_cumulus_file, alto_workspace, alto_results_folder, sampleid))
-    bash_alto.close()
-
+    with open(run_alto_file, "a") as f:
+        for sampleid in sample_dict.keys():
+            input_cellbender_cumulus_file = "%s/%s/input_cumulus.json" % (cellbender_results_dir, sampleid)
+            f.write("alto terra run -m %s -i %s -w %s --bucket-folder %s/%s --no-cache\n" % (
+                alto_method, input_cellbender_cumulus_file, alto_workspace, alto_results_folder, sampleid))
+    
     logging.info("STEP 10 | Initiate Terra cumulus pipeline via alto. ")
     execute_alto_command(run_alto_file)
 
