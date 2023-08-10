@@ -216,7 +216,7 @@ def upload_cell_bender_input(buckets, directories, sample_dicts, sample_tracking
 
     logging.info("STEP 7 | Upload cellbender input file to Google Cloud Storage Bucket. ")
     uploadcellbender_file = "%s/uploadcellbender_%s.sh" % (cellbender_dir, sample_tracking['flowcell'].iloc[0])
-    with open(uploadcellbender_file, "w") as f:
+    with open(uploadcellbender_file, "a") as f:
         for sampleid in sample_dict.keys():
             for sample in sample_dict[sampleid]:
                 input_cellbender_file = "%s/%s/input_cellbender.json" % (cellbender_dir, sampleid)
@@ -281,7 +281,7 @@ def upload_post_cellbender_cumulus_input(buckets, directories, sample_dicts, sam
     logging.info("STEP 9 | Upload post-cellbender cumulus samplesheet and input file to Google Cloud Storage Bucket. ")
     uploadcellbendercumulus_file = "%s/uploadcellbendercumulus_%s.sh" % (
         cellbender_results_dir, sample_tracking['flowcell'].iloc[0])
-    with open(uploadcellbendercumulus_file, "w") as f:
+    with open(uploadcellbendercumulus_file, "a") as f:
         for sampleid in sample_dict.keys():
             samplesheet_cellbender_cumulus_file = "%s/%s/samplesheet_cellbender_cumulus.csv" % (
                 cellbender_results_dir, sampleid)
