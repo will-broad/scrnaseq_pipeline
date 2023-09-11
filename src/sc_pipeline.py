@@ -70,7 +70,6 @@ def process_rna_flowcell(seq_dir):
     """
     sample_tracking = master_tracking[master_tracking.run_pipeline &
                                       (master_tracking.seq_dir == seq_dir)]
-
     threading.current_thread().name = 'Thread:' + sample_tracking['flowcell'].iloc[0]
     logging.info("Started processing samples in {}".format(seq_dir))
 
@@ -212,8 +211,7 @@ if __name__ == "__main__":
         logging.info('Processing RNA Seq and ATAC Seq Samples.')
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
             seq_dirs = set(master_tracking[master_tracking.run_pipeline & ((master_tracking.method == RNA) | (master_tracking.method == ATAC))]['seq_dir'])
-            print(seq_dirs)
-            #executor.map(process_rna_flowcell, seq_dirs)
+            executor.map(process_rna_flowcell, seq_dirs)
     if MULTIOME in method:
         logging.info('Processing Multiome Samples.')
         process_multiome()
