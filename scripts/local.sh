@@ -30,6 +30,7 @@ cellranger_arc_version="2.0.1"
 current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
+  --machine-type 'n1-standard-32' \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
   --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --timeout '2d'\
   --logging "$gcp_bucket_basedir/logs/" \

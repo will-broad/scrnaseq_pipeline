@@ -28,7 +28,7 @@ cellranger_arc_version = os.getenv("CELLRANGER_ARC_VERSION", default="2.0.1")
 """
 Set global variables
 """
-max_parallel_threads = 50
+max_parallel_threads = 16
 cellbender_matrix_name = "out_FPR_0.01_filtered.h5"
 cwd = os.getcwd()
 basedir = cwd + "/" + project_name + "/sc_processed"
