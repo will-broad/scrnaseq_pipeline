@@ -11,7 +11,7 @@ import os
 Config Section - Modify this section only
 """
 project_name = os.getenv("PROJECT_NAME", default="finngen_gex")
-sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/test_demux_cc_sampletracker.csv")
+sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/091123_batch4_demux_cc_sampletracker.csv")
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/finngen_gex")
 email = os.getenv("EMAIL", default="will@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'693-finland-v2f/Finngen'")
@@ -212,7 +212,8 @@ if __name__ == "__main__":
         logging.info('Processing RNA Seq and ATAC Seq Samples.')
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel_threads) as executor:
             seq_dirs = set(master_tracking[master_tracking.run_pipeline & ((master_tracking.method == RNA) | (master_tracking.method == ATAC))]['seq_dir'])
-            executor.map(process_rna_flowcell, seq_dirs)
+            print(seq_dirs)
+            #executor.map(process_rna_flowcell, seq_dirs)
     if MULTIOME in method:
         logging.info('Processing Multiome Samples.')
         process_multiome()
