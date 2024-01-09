@@ -12,7 +12,7 @@
 
 dir_name="finngen_atac"
 gcp_bucket_basedir="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/${dir_name}"
-sample_tracking_file="${gcp_bucket_basedir}/083023_batches_reseq_sampletracker.csv"
+sample_tracking_file="${gcp_bucket_basedir}/010924_batch4_atac_count_sampletracker.csv"
 project_name="finngen_atac"
 email="will@broadinstitute.org"
 workspace="'693-finland-v2f/Finngen'"
