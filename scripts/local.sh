@@ -33,7 +33,7 @@ dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
   --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --timeout '2d'\
   --logging "$gcp_bucket_basedir/logs/" \
-  --command "wget https://github.com/will-broad/scrnaseq_pipeline/archive/cellbender_3.0.zip && unzip cellbender_3.0.zip && cd scrnaseq_pipeline-gex/src && python sc_pipeline.py" \
+  --command "wget https://github.com/will-broad/scrnaseq_pipeline/archive/cellbender_3.0.zip && unzip cellbender_3.0.zip && cd scrnaseq_pipeline-cellbender_3.0/src && python sc_pipeline.py" \
   --output PIPELINE_LOGS="$gcp_bucket_basedir/logs/execution_$current_time.log" \
   --input SAMPLE_TRACKING_FILE="$sample_tracking_file" \
   --env PROJECT_NAME="$project_name" \
