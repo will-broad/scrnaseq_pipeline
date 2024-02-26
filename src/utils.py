@@ -21,8 +21,8 @@ def build_directories(basedir):
         'counts': basedir + "/counts",
         'results': basedir + "/cumulus",
         'cellranger_arc': basedir + "/cellranger_arc",
-        'cellbender': basedir + "/cellbenderV2",
-        'cellbender_results': basedir + "/cellbenderV2_cumulus"
+        'cellbender': basedir + "/cellbenderV3",
+        'cellbender_results': basedir + "/cellbenderV3_cumulus"
     }
     for directory in directories.values():
         if not os.path.exists(directory):
@@ -36,8 +36,8 @@ def build_buckets(gcp_basedir, project):
         'counts': gcp_basedir + "/counts_" + project,
         'results': gcp_basedir + "/cumulus_" + project,
         'cellranger_arc': gcp_basedir + "/cellranger_arc_" + project,
-        'cellbender': gcp_basedir + "/cellbenderv2_" + project,
-        'cellbender_results': gcp_basedir + "/cellbenderv2_cumulus_" + project
+        'cellbender': gcp_basedir + "/cellbenderv3_" + project,
+        'cellbender_results': gcp_basedir + "/cellbenderv3_cumulus_" + project
     }
 
 
