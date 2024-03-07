@@ -339,7 +339,7 @@ def upload_cellranger_arc_samplesheet(buckets, directories, sample_tracking, cel
 
     with open('templates/cellranger_arc_input_template.json') as f:
         template = f.read().replace('{input_csv}', samplesheet_arc_gcp_file) \
-            .replace('{output_dir}', f"{arc_bucket}/output/") \
+            .replace('{output_dir}', f"{arc_bucket}/output_maxcell/") \
             .replace('"{include_introns}"', f'{str(include_introns).lower()}') \
             .replace('{cellranger_arc_version}', f'{cellranger_arc_version}') \
             .replace('"{mkfastq_disk_space}"', f'{mkfastq_disk_space}') \
