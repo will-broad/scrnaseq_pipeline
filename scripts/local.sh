@@ -32,6 +32,7 @@ current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
   --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --timeout '2d'\
+  --min-cores '32' \
   --logging "$gcp_bucket_basedir/logs/" \
   --command "wget https://github.com/will-broad/scrnaseq_pipeline/archive/gex.zip && unzip gex.zip && cd scrnaseq_pipeline-gex/src && python sc_pipeline.py" \
   --output PIPELINE_LOGS="$gcp_bucket_basedir/logs/execution_$current_time.log" \
