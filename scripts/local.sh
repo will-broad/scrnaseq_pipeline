@@ -12,7 +12,7 @@
 
 dir_name="finngen_gex"
 gcp_bucket_basedir="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/${dir_name}"
-sample_tracking_file="${gcp_bucket_basedir}/041524_batch4_demux_cc_sampletracker.csv"
+sample_tracking_file="${gcp_bucket_basedir}/041624_batch4_demux_cc_sampletracker.csv"
 project_name="finngen_gex"
 email="will@broadinstitute.org"
 workspace="'693-finland-v2f/Finngen'"
@@ -32,7 +32,7 @@ current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
   --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --timeout '2d'\
-  --min-cores '32' \
+  --min-cores '4' \
   --logging "$gcp_bucket_basedir/logs/" \
   --command "wget https://github.com/will-broad/scrnaseq_pipeline/archive/gex.zip && unzip gex.zip && cd scrnaseq_pipeline-gex/src && python sc_pipeline.py" \
   --output PIPELINE_LOGS="$gcp_bucket_basedir/logs/execution_$current_time.log" \
