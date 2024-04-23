@@ -31,7 +31,7 @@ current_time=$(date "+%Y.%m.%d-%H.%M.%S")
 
 dsub --provider google-cls-v2 --project "microbiome-xavier" --regions us-east1 \
   --service-account "scrnaseq-pipeline@microbiome-xavier.iam.gserviceaccount.com" \
-  --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --timeout '2d'\
+  --image "gcr.io/microbiome-xavier/conda-alto" --disk-size '10' --boot-disk-size '30' --timeout '2d'\
   --min-cores '4' \
   --logging "$gcp_bucket_basedir/logs/" \
   --command "wget https://github.com/will-broad/scrnaseq_pipeline/archive/multiome_maxcell.zip && unzip multiome_maxcell.zip && cd scrnaseq_pipeline-multiome_maxcell/src && python sc_pipeline.py" \
