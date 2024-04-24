@@ -12,7 +12,7 @@ import os
 Config Section - Modify this section only
 """
 project_name = os.getenv("PROJECT_NAME", default="finngen_multiome")
-sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/042324_batches_multiome_sampletracker.csv")
+sample_tracking_file = os.getenv("SAMPLE_TRACKING_FILE", default="../data/042424_batches_multiome_sampletracker.csv")
 gcp_basedir = os.getenv("GCP_BUCKET_BASEDIR", default="gs://fc-secure-d4adbbf9-8265-4a5c-b14f-23a5f1b5c4f9/finngen_multiome")
 email = os.getenv("EMAIL", default="will@broadinstitute.org")
 alto_workspace = os.getenv("TERRA_WORKSPACE", default="'693-finland-v2f/Finngen'")
